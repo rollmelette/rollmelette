@@ -57,7 +57,7 @@ func Run(opts *RunOpts, app Application) (err error) {
 		case *advanceInput:
 			err = env.handleAdvance(app, input)
 		case *inspectInput:
-			err = app.Inspect(env, input.Payload)
+			err = env.handleInspect(app, input.Payload)
 		default:
 			// impossible
 			panic("invalid input type")

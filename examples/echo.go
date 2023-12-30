@@ -4,8 +4,6 @@
 package main
 
 import (
-	"log/slog"
-
 	"github.com/gligneul/rollmelette"
 )
 
@@ -18,7 +16,6 @@ func (e *EchoApplication) Advance(
 	metadata rollmelette.Metadata,
 	payload []byte,
 ) error {
-	slog.Info("received advance input")
 	env.Voucher(metadata.MsgSender, payload)
 	env.Notice(payload)
 	env.Report(payload)
@@ -26,7 +23,6 @@ func (e *EchoApplication) Advance(
 }
 
 func (e *EchoApplication) Inspect(env rollmelette.EnvInspector, payload []byte) error {
-	slog.Info("received inspect input")
 	env.Report(payload)
 	return nil
 }

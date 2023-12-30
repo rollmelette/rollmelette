@@ -31,6 +31,13 @@ func newEnv(addressBook AddressBook, rollup rollupEnv) *env {
 // handlers ////////////////////////////////////////////////////////////////////////////////////////
 
 func (e *env) handleAdvance(app Application, input *advanceInput) error {
+	slog.Debug("received advance",
+		"payload", hexutil.Encode(input.Payload),
+		"inputIndex", input.Metadata.InputIndex,
+		"msgSender", input.Metadata.MsgSender,
+		"blockNumber", input.Metadata.BlockNumber,
+		"blockTimestamp", input.Metadata.BlockTimestamp,
+	)
 	if input.Metadata.MsgSender == e.DAppAddressRelay {
 		return e.handleDAppAddressRelay(input.Payload)
 	}
@@ -43,14 +50,19 @@ func (e *env) handleDAppAddressRelay(payload []byte) error {
 	}
 	e.appAddress = (common.Address)(payload)
 	e.appAddressSet = true
-	slog.Info("got application address from relay", "address", e.appAddress)
+	slog.Debug("got application address from relay", "address", e.appAddress)
 	return nil
+}
+
+func (e *env) handleInspect(app Application, payload []byte) error {
+	slog.Debug("received inspect", "payload", hexutil.Encode(payload))
+	return app.Inspect(e, payload)
 }
 
 // EnvInspector interface //////////////////////////////////////////////////////////////////////////
 
 func (e *env) Report(payload []byte) {
-	slog.Info("sending report", "payload", hexutil.Encode(payload))
+	slog.Debug("sending report", "payload", hexutil.Encode(payload))
 	err := e.rollup.sendReport(payload)
 	if err != nil {
 		panic(err)
@@ -59,7 +71,7 @@ func (e *env) Report(payload []byte) {
 
 func (e *env) Reportf(format string, args ...any) {
 	message := fmt.Sprintf(format, args...)
-	slog.Info("sending report", "payload", message)
+	slog.Debug("sending report", "payload", message)
 	err := e.rollup.sendReport([]byte(message))
 	if err != nil {
 		panic(err)
@@ -73,7 +85,7 @@ func (e *env) AppAddress() (common.Address, bool) {
 // EnvInspector interface //////////////////////////////////////////////////////////////////////////
 
 func (e *env) Voucher(destination common.Address, payload []byte) int {
-	slog.Info("sending voucher", "destination", destination, "payload", hexutil.Encode(payload))
+	slog.Debug("sending voucher", "destination", destination, "payload", hexutil.Encode(payload))
 	index, err := e.rollup.sendVoucher(destination, payload)
 	if err != nil {
 		panic(err)
@@ -82,7 +94,7 @@ func (e *env) Voucher(destination common.Address, payload []byte) int {
 }
 
 func (e *env) Notice(payload []byte) int {
-	slog.Info("sending notice", "payload", hexutil.Encode(payload))
+	slog.Debug("sending notice", "payload", hexutil.Encode(payload))
 	index, err := e.rollup.sendNotice(payload)
 	if err != nil {
 		panic(err)

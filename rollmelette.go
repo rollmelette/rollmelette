@@ -13,11 +13,11 @@ type Application interface {
 
 	// Advance the application state.
 	// If this method returns an error, Rollmelette reverts the execution.
-	Advance(env Env, metadata Metadata, input []byte) error
+	Advance(env Env, metadata Metadata, payload []byte) error
 
 	// Inspect the application state.
 	// If this method returns an error, Rollmelette reverts the execution.
-	Inspect(env EnvInspector, input []byte) error
+	Inspect(env EnvInspector, payload []byte) error
 }
 
 // EnvIspector is the entrypoint for the inspect functions of the Rollup API.
