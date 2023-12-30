@@ -15,19 +15,36 @@ import (
 // This struct isn't public because we don't want users of Rollmelette to create it.
 // Instead, it is create by the running and testing functions.
 type env struct {
-	rollup rollup
+	AddressBook
+	rollup        rollupEnv
+	appAddress    common.Address
+	appAddressSet bool
 }
 
-func newEnv(rollup rollup) *env {
+func newEnv(addressBook AddressBook, rollup rollupEnv) *env {
 	return &env{
-		rollup: rollup,
+		AddressBook: addressBook,
+		rollup:      rollup,
 	}
 }
 
 // handlers ////////////////////////////////////////////////////////////////////////////////////////
 
 func (e *env) handleAdvance(app Application, input *advanceInput) error {
+	if input.Metadata.MsgSender == e.DAppAddressRelay {
+		return e.handleDAppAddressRelay(input.Payload)
+	}
 	return app.Advance(e, input.Metadata, input.Payload)
+}
+
+func (e *env) handleDAppAddressRelay(payload []byte) error {
+	if len(payload) != 20 {
+		return fmt.Errorf("invalid input from DAppAddressRelay: %x", payload)
+	}
+	e.appAddress = (common.Address)(payload)
+	e.appAddressSet = true
+	slog.Info("got application address from relay", "address", e.appAddress)
+	return nil
 }
 
 // EnvInspector interface //////////////////////////////////////////////////////////////////////////
@@ -47,6 +64,10 @@ func (e *env) Reportf(format string, args ...any) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func (e *env) AppAddress() (common.Address, bool) {
+	return e.appAddress, e.appAddressSet
 }
 
 // EnvInspector interface //////////////////////////////////////////////////////////////////////////

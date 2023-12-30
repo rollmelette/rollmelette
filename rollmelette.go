@@ -28,6 +28,10 @@ type EnvInspector interface {
 
 	// Reportf receives a format string and arguments, and send them as a report.
 	Reportf(format string, args ...any)
+
+	// DAppAddress returns the application address sent by the address relay contract.
+	// If the contract didn't send the address yet, the function returns false.
+	AppAddress() (common.Address, bool)
 }
 
 // Env is the entrypoint for the Rollup API and to Rollmelette's asset management.

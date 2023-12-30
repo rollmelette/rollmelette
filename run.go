@@ -11,6 +11,7 @@ import (
 
 // RunOpts allows the application developer to pass some parameters to the run function.
 type RunOpts struct {
+	AddressBook
 
 	// RollupURL is the URL of the Rollup API.
 	RollupURL string
@@ -45,7 +46,7 @@ func Run(opts *RunOpts, app Application) (err error) {
 		opts = NewRunOpts()
 	}
 	rollup := newRollupHttp(opts.RollupURL)
-	env := newEnv(rollup)
+	env := newEnv(opts.AddressBook, rollup)
 	status := finishStatusAccept
 	for {
 		input, err := rollup.finishAndGetNext(status)

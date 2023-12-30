@@ -40,12 +40,8 @@ type inspectInput struct {
 	Payload []byte
 }
 
-// rollup is the interface of the Rollup API used by the env struct.
-type rollup interface {
-
-	// finishAndGetNext sends a finish request to the Rollup API.
-	// If there is no error, it returns an advanceInput or an inspectInput.
-	finishAndGetNext(status finishStatus) (any, error)
+// rollupEnv is the interface of the Rollup API used by the env struct.
+type rollupEnv interface {
 
 	// sendVoucher sends a voucher to the Rollup API and returns its index.
 	sendVoucher(destination common.Address, payload []byte) (int, error)
@@ -56,3 +52,11 @@ type rollup interface {
 	// sendNotice sends a report to the Rollup API.
 	sendReport(payload []byte) error
 }
+
+// rollupRun is the interface of the Rollup API used by the run function.
+// type rollupRun interface {
+//
+// 	// finishAndGetNext sends a finish request to the Rollup API.
+// 	// If there is no error, it returns an advanceInput or an inspectInput.
+// 	finishAndGetNext(status finishStatus) (any, error)
+// }
