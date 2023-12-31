@@ -17,20 +17,49 @@ import (
 type env struct {
 	AddressBook
 	rollup        rollupEnv
+	app           Application
 	appAddress    common.Address
 	appAddressSet bool
 }
 
-func newEnv(addressBook AddressBook, rollup rollupEnv) *env {
+func newEnv(addressBook AddressBook, rollup rollupEnv, app Application) *env {
 	return &env{
 		AddressBook: addressBook,
 		rollup:      rollup,
+		app:         app,
 	}
 }
 
 // handlers ////////////////////////////////////////////////////////////////////////////////////////
 
-func (e *env) handleAdvance(app Application, input *advanceInput) error {
+func (e *env) handle(input any) (err error) {
+	defer func() {
+		// Recover from panic so we can safely reject the input and print an error message.
+		panicObj := recover()
+		if panicObj != nil {
+			panicErr, ok := panicObj.(error)
+			if ok {
+				err = panicErr
+			} else {
+				err = fmt.Errorf("a panic occured: %v", panicObj)
+			}
+		}
+		if err != nil {
+			slog.Error("input rejected", "error", err)
+		}
+	}()
+	switch input := input.(type) {
+	case *advanceInput:
+		return e.handleAdvance(input)
+	case *inspectInput:
+		return e.handleInspect(input.Payload)
+	default:
+		// impossible
+		panic("invalid input type")
+	}
+}
+
+func (e *env) handleAdvance(input *advanceInput) error {
 	slog.Debug("received advance",
 		"payload", hexutil.Encode(input.Payload),
 		"inputIndex", input.Metadata.InputIndex,
@@ -38,15 +67,15 @@ func (e *env) handleAdvance(app Application, input *advanceInput) error {
 		"blockNumber", input.Metadata.BlockNumber,
 		"blockTimestamp", input.Metadata.BlockTimestamp,
 	)
-	if input.Metadata.MsgSender == e.DAppAddressRelay {
-		return e.handleDAppAddressRelay(input.Payload)
+	if input.Metadata.MsgSender == e.AppAddressRelay {
+		return e.handleAppAddressRelay(input.Payload)
 	}
-	return app.Advance(e, input.Metadata, input.Payload)
+	return e.app.Advance(e, input.Metadata, input.Payload)
 }
 
-func (e *env) handleDAppAddressRelay(payload []byte) error {
+func (e *env) handleAppAddressRelay(payload []byte) error {
 	if len(payload) != 20 {
-		return fmt.Errorf("invalid input from DAppAddressRelay: %x", payload)
+		return fmt.Errorf("invalid input from app address relay: %x", payload)
 	}
 	e.appAddress = (common.Address)(payload)
 	e.appAddressSet = true
@@ -54,9 +83,9 @@ func (e *env) handleDAppAddressRelay(payload []byte) error {
 	return nil
 }
 
-func (e *env) handleInspect(app Application, payload []byte) error {
+func (e *env) handleInspect(payload []byte) error {
 	slog.Debug("received inspect", "payload", hexutil.Encode(payload))
-	return app.Inspect(e, payload)
+	return e.app.Inspect(e, payload)
 }
 
 // EnvInspector interface //////////////////////////////////////////////////////////////////////////
@@ -64,15 +93,6 @@ func (e *env) handleInspect(app Application, payload []byte) error {
 func (e *env) Report(payload []byte) {
 	slog.Debug("sending report", "payload", hexutil.Encode(payload))
 	err := e.rollup.sendReport(payload)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func (e *env) Reportf(format string, args ...any) {
-	message := fmt.Sprintf(format, args...)
-	slog.Debug("sending report", "payload", message)
-	err := e.rollup.sendReport([]byte(message))
 	if err != nil {
 		panic(err)
 	}

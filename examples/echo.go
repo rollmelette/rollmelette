@@ -11,7 +11,7 @@ import (
 // input; and a report for each inspect input.
 type EchoApplication struct{}
 
-func (e *EchoApplication) Advance(
+func (a *EchoApplication) Advance(
 	env rollmelette.Env,
 	metadata rollmelette.Metadata,
 	payload []byte,
@@ -22,7 +22,7 @@ func (e *EchoApplication) Advance(
 	return nil
 }
 
-func (e *EchoApplication) Inspect(env rollmelette.EnvInspector, payload []byte) error {
+func (a *EchoApplication) Inspect(env rollmelette.EnvInspector, payload []byte) error {
 	env.Report(payload)
 	return nil
 }

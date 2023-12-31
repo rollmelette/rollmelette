@@ -4,8 +4,6 @@
 package rollmelette
 
 import (
-	"fmt"
-	"log/slog"
 	"runtime"
 )
 
@@ -31,39 +29,19 @@ func NewRunOpts() *RunOpts {
 // Run connects to the Rollup API and calls the application.
 // If opt is nil, this function creates it with the NewRunOpts function.
 func Run(opts *RunOpts, app Application) (err error) {
-	defer func() {
-		panicObj := recover()
-		if panicObj != nil {
-			panicErr, ok := panicObj.(error)
-			if ok {
-				err = panicErr
-			} else {
-				err = fmt.Errorf("a panic occured: %v", panicObj)
-			}
-		}
-	}()
 	if opts == nil {
 		opts = NewRunOpts()
 	}
 	rollup := newRollupHttp(opts.RollupURL)
-	env := newEnv(opts.AddressBook, rollup)
+	env := newEnv(opts.AddressBook, rollup, app)
 	status := finishStatusAccept
 	for {
 		input, err := rollup.finishAndGetNext(status)
 		if err != nil {
 			return err
 		}
-		switch input := input.(type) {
-		case *advanceInput:
-			err = env.handleAdvance(app, input)
-		case *inspectInput:
-			err = env.handleInspect(app, input.Payload)
-		default:
-			// impossible
-			panic("invalid input type")
-		}
+		err = env.handle(input)
 		if err != nil {
-			slog.Error("rejecting input", "error", err)
 			status = finishStatusReject
 		} else {
 			status = finishStatusAccept

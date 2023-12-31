@@ -7,8 +7,8 @@ import "github.com/ethereum/go-ethereum/common"
 
 // AddressBook contains the addresses of the rollups contracts.
 type AddressBook struct {
-	CartesiDAppFactory  common.Address
-	DAppAddressRelay    common.Address
+	CartesiAppFactory   common.Address
+	AppAddressRelay     common.Address
 	ERC1155BatchPortal  common.Address
 	ERC1155SinglePortal common.Address
 	ERC20Portal         common.Address
@@ -20,8 +20,8 @@ type AddressBook struct {
 // NewAddressBook returns the contract addresses for mainnet and devnet.
 func NewAddressBook() AddressBook {
 	return AddressBook{
-		CartesiDAppFactory:  common.HexToAddress("0x7122cd1221C20892234186facfE8615e6743Ab02"),
-		DAppAddressRelay:    common.HexToAddress("0xF5DE34d6BbC0446E2a45719E718efEbaaE179daE"),
+		CartesiAppFactory:   common.HexToAddress("0x7122cd1221C20892234186facfE8615e6743Ab02"),
+		AppAddressRelay:     common.HexToAddress("0xF5DE34d6BbC0446E2a45719E718efEbaaE179daE"),
 		ERC1155BatchPortal:  common.HexToAddress("0xedB53860A6B52bbb7561Ad596416ee9965B055Aa"),
 		ERC1155SinglePortal: common.HexToAddress("0x7CFB0193Ca87eB6e48056885E026552c3A941FC4"),
 		ERC20Portal:         common.HexToAddress("0x9C21AEb2093C32DDbC53eEF24B873BDCd1aDa1DB"),

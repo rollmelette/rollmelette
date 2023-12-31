@@ -8,30 +8,12 @@ import (
 	"os"
 
 	"github.com/gligneul/rollmelette"
-	"github.com/lmittmann/tint"
-	"github.com/mattn/go-isatty"
 )
-
-func init() {
-	logOpts := new(tint.Options)
-	logOpts.Level = slog.LevelDebug
-	logOpts.NoColor = !isatty.IsTerminal(os.Stdout.Fd())
-	// disable timestamp because it is irrelevant in the cartesi machine
-	logOpts.ReplaceAttr = func(groups []string, attr slog.Attr) slog.Attr {
-		if attr.Key == slog.TimeKey {
-			var zeroattr slog.Attr
-			return zeroattr
-		}
-		return attr
-	}
-	handler := tint.NewHandler(os.Stdout, logOpts)
-	logger := slog.New(handler)
-	slog.SetDefault(logger)
-}
 
 func main() {
 	examples := map[string]rollmelette.Application{
-		"echo": &EchoApplication{},
+		"address": &AddressApplication{},
+		"echo":    &EchoApplication{},
 	}
 
 	if len(os.Args) < 2 {
