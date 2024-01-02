@@ -4,6 +4,7 @@
 package rollmelette
 
 import (
+	"context"
 	"runtime"
 )
 
@@ -28,15 +29,15 @@ func NewRunOpts() *RunOpts {
 
 // Run connects to the Rollup API and calls the application.
 // If opt is nil, this function creates it with the NewRunOpts function.
-func Run(opts *RunOpts, app Application) (err error) {
+func Run(ctx context.Context, opts *RunOpts, app Application) (err error) {
 	if opts == nil {
 		opts = NewRunOpts()
 	}
 	rollup := newRollupHttp(opts.RollupURL)
-	env := newEnv(opts.AddressBook, rollup, app)
+	env := newEnv(ctx, opts.AddressBook, rollup, app)
 	status := finishStatusAccept
 	for {
-		input, err := rollup.finishAndGetNext(status)
+		input, err := rollup.finishAndGetNext(ctx, status)
 		if err != nil {
 			return err
 		}

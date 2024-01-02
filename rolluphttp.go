@@ -5,6 +5,7 @@ package rollmelette
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -28,20 +29,20 @@ func newRollupHttp(url string) *rollupHttp {
 
 // rollup interface ////////////////////////////////////////////////////////////////////////////////
 
-func (r *rollupHttp) finishAndGetNext(status finishStatus) (any, error) {
+func (r *rollupHttp) finishAndGetNext(ctx context.Context, status finishStatus) (any, error) {
 	request := struct {
 		Status string `json:"status"`
 	}{
 		Status: string(status),
 	}
-	resp, err := r.sendPost("finish", request)
+	resp, err := r.sendPost(ctx, "finish", request)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode == http.StatusAccepted {
 		// if we get StatusAccepted we should trying again
-		return r.finishAndGetNext(status)
+		return r.finishAndGetNext(ctx, status)
 	}
 	if err = checkStatusOk(resp); err != nil {
 		return nil, err
@@ -63,7 +64,7 @@ func (r *rollupHttp) finishAndGetNext(status finishStatus) (any, error) {
 	}
 }
 
-func (r *rollupHttp) sendVoucher(destination common.Address, payload []byte) (int, error) {
+func (r *rollupHttp) sendVoucher(ctx context.Context, destination common.Address, payload []byte) (int, error) {
 	request := struct {
 		Destination string `json:"destination"`
 		Payload     string `json:"payload"`
@@ -71,7 +72,7 @@ func (r *rollupHttp) sendVoucher(destination common.Address, payload []byte) (in
 		Destination: hexutil.Encode(destination[:]),
 		Payload:     hexutil.Encode(payload),
 	}
-	resp, err := r.sendPost("voucher", request)
+	resp, err := r.sendPost(ctx, "voucher", request)
 	if err != nil {
 		return 0, err
 	}
@@ -82,13 +83,13 @@ func (r *rollupHttp) sendVoucher(destination common.Address, payload []byte) (in
 	return parseOutputIndex(resp.Body)
 }
 
-func (r *rollupHttp) sendNotice(payload []byte) (int, error) {
+func (r *rollupHttp) sendNotice(ctx context.Context, payload []byte) (int, error) {
 	request := struct {
 		Payload string `json:"payload"`
 	}{
 		Payload: hexutil.Encode(payload),
 	}
-	resp, err := r.sendPost("notice", request)
+	resp, err := r.sendPost(ctx, "notice", request)
 	if err != nil {
 		return 0, err
 	}
@@ -99,13 +100,13 @@ func (r *rollupHttp) sendNotice(payload []byte) (int, error) {
 	return parseOutputIndex(resp.Body)
 }
 
-func (r *rollupHttp) sendReport(payload []byte) error {
+func (r *rollupHttp) sendReport(ctx context.Context, payload []byte) error {
 	request := struct {
 		Payload string `json:"payload"`
 	}{
 		Payload: hexutil.Encode(payload),
 	}
-	resp, err := r.sendPost("report", request)
+	resp, err := r.sendPost(ctx, "report", request)
 	if err != nil {
 		return err
 	}
@@ -120,7 +121,7 @@ func (r *rollupHttp) sendReport(payload []byte) error {
 
 // sendPost sends a POST request and returns the HTTP response.
 // The callee should close the response body.
-func (r *rollupHttp) sendPost(route string, request any) (*http.Response, error) {
+func (r *rollupHttp) sendPost(ctx context.Context, route string, request any) (*http.Response, error) {
 	body, err := json.Marshal(request)
 	if err != nil {
 		return nil, fmt.Errorf("rollup: serialize request: %w", err)
@@ -130,7 +131,8 @@ func (r *rollupHttp) sendPost(route string, request any) (*http.Response, error)
 	if err != nil {
 		return nil, fmt.Errorf("rollup: create request: %w", err)
 	}
-	req.Header.Set("Content-Type", "application/json")
+	req = req.WithContext(ctx)
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("rollup: do request: %w", err)

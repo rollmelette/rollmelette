@@ -1,0 +1,8 @@
+schema: graphql/schema.graphql
+generated: genqlient.go
+package: integration
+bindings:
+  BigInt:
+    type: string
+operations:
+  - graphql/queries.graphql

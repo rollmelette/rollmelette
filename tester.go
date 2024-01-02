@@ -4,6 +4,7 @@
 package rollmelette
 
 import (
+	"context"
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -43,7 +44,7 @@ func NewTester(app Application) *Tester {
 		MsgSender:  common.HexToAddress("0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"),
 		AppAddress: common.HexToAddress("0x70ac08179605AF2D9e75782b8DEcDD3c22aA4D0C"),
 		rollup:     rollup,
-		env:        newEnv(NewAddressBook(), rollup, app),
+		env:        newEnv(context.Background(), NewAddressBook(), rollup, app),
 		inputIndex: 0,
 	}
 }

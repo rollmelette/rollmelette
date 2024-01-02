@@ -1,0 +1,47 @@
+# Get the input status.
+query getInputStatus($index: Int!) {
+  input(index: $index) {
+    status
+  }
+}
+
+# Get the whole node state.
+query getNodeState {
+  inputs {
+    edges {
+      node {
+        index
+        status
+        msgSender
+        timestamp
+        blockNumber
+        payload
+        notices {
+          edges {
+            node {
+              index
+              payload
+            }
+          }
+        }
+        vouchers {
+          edges {
+            node {
+              index
+              payload
+              destination
+            }
+          }
+        }
+        reports {
+          edges {
+            node {
+              index
+              payload
+            }
+          }
+        }
+      }
+    }
+  }
+}

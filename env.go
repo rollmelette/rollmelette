@@ -4,6 +4,7 @@
 package rollmelette
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 
@@ -16,14 +17,16 @@ import (
 // Instead, it is create by the running and testing functions.
 type env struct {
 	AddressBook
+	ctx           context.Context
 	rollup        rollupEnv
 	app           Application
 	appAddress    common.Address
 	appAddressSet bool
 }
 
-func newEnv(addressBook AddressBook, rollup rollupEnv, app Application) *env {
+func newEnv(ctx context.Context, addressBook AddressBook, rollup rollupEnv, app Application) *env {
 	return &env{
+		ctx:         ctx,
 		AddressBook: addressBook,
 		rollup:      rollup,
 		app:         app,
@@ -92,7 +95,7 @@ func (e *env) handleInspect(payload []byte) error {
 
 func (e *env) Report(payload []byte) {
 	slog.Debug("sending report", "payload", hexutil.Encode(payload))
-	err := e.rollup.sendReport(payload)
+	err := e.rollup.sendReport(e.ctx, payload)
 	if err != nil {
 		panic(err)
 	}
@@ -106,7 +109,7 @@ func (e *env) AppAddress() (common.Address, bool) {
 
 func (e *env) Voucher(destination common.Address, payload []byte) int {
 	slog.Debug("sending voucher", "destination", destination, "payload", hexutil.Encode(payload))
-	index, err := e.rollup.sendVoucher(destination, payload)
+	index, err := e.rollup.sendVoucher(e.ctx, destination, payload)
 	if err != nil {
 		panic(err)
 	}
@@ -115,7 +118,7 @@ func (e *env) Voucher(destination common.Address, payload []byte) int {
 
 func (e *env) Notice(payload []byte) int {
 	slog.Debug("sending notice", "payload", hexutil.Encode(payload))
-	index, err := e.rollup.sendNotice(payload)
+	index, err := e.rollup.sendNotice(e.ctx, payload)
 	if err != nil {
 		panic(err)
 	}

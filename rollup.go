@@ -3,7 +3,11 @@
 
 package rollmelette
 
-import "github.com/ethereum/go-ethereum/common"
+import (
+	"context"
+
+	"github.com/ethereum/go-ethereum/common"
+)
 
 // Metadata of the rollup advance input.
 type Metadata struct {
@@ -44,13 +48,13 @@ type inspectInput struct {
 type rollupEnv interface {
 
 	// sendVoucher sends a voucher to the Rollup API and returns its index.
-	sendVoucher(destination common.Address, payload []byte) (int, error)
+	sendVoucher(ctx context.Context, destination common.Address, payload []byte) (int, error)
 
 	// sendNotice sends a notice to the Rollup API and returns its index.
-	sendNotice(payload []byte) (int, error)
+	sendNotice(ctx context.Context, payload []byte) (int, error)
 
 	// sendNotice sends a report to the Rollup API.
-	sendReport(payload []byte) error
+	sendReport(ctx context.Context, payload []byte) error
 }
 
 // rollupRun is the interface of the Rollup API used by the run function.

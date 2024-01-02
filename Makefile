@@ -1,6 +1,10 @@
 .PHONY: all
 all: | lint build test
 
+.PHONY: lint
+lint:
+	golangci-lint run
+
 .PHONY: build
 build:
 	go build ./...
@@ -9,9 +13,10 @@ build:
 test:
 	go test -p 1 ./...
 
-.PHONY: lint
-lint:
-	golangci-lint run
+.PHONY: cov
+cov:
+	go test -p 1 -race -coverpkg=. -coverprofile=coverage.txt -covermode=atomic ./...
+	go tool cover -func coverage.txt
 
 .PHONY: gen
 gen:
@@ -24,3 +29,7 @@ check-gen: gen
 .PHONY: run
 run:
 	go run ./examples/ $(EXAMPLE)
+
+.PHONY: clean
+clean:
+	rm -f coverage.txt

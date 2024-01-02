@@ -3,7 +3,11 @@
 
 package rollmelette
 
-import "github.com/ethereum/go-ethereum/common"
+import (
+	"context"
+
+	"github.com/ethereum/go-ethereum/common"
+)
 
 // VoucherMock represents a voucher received by the mock.
 type VoucherMock struct {
@@ -30,7 +34,11 @@ type RollupMock struct {
 
 // rollup interface ////////////////////////////////////////////////////////////////////////////////
 
-func (m *RollupMock) sendVoucher(destination common.Address, payload []byte) (int, error) {
+func (m *RollupMock) sendVoucher(
+	ctx context.Context,
+	destination common.Address,
+	payload []byte,
+) (int, error) {
 	m.Vouchers = append(m.Vouchers, VoucherMock{
 		Destination: destination,
 		Payload:     payload,
@@ -38,14 +46,14 @@ func (m *RollupMock) sendVoucher(destination common.Address, payload []byte) (in
 	return len(m.Vouchers), nil
 }
 
-func (m *RollupMock) sendNotice(payload []byte) (int, error) {
+func (m *RollupMock) sendNotice(ctx context.Context, payload []byte) (int, error) {
 	m.Notices = append(m.Notices, NoticeMock{
 		Payload: payload,
 	})
 	return len(m.Notices), nil
 }
 
-func (m *RollupMock) sendReport(payload []byte) error {
+func (m *RollupMock) sendReport(ctx context.Context, payload []byte) error {
 	m.Reports = append(m.Reports, ReportMock{
 		Payload: payload,
 	})
