@@ -29,11 +29,11 @@ func (s *PanicSuite) SetupTest() {
 func (s *PanicSuite) TestItRejectsAdvance() {
 	payload := common.Hex2Bytes("deadbeef")
 	result := s.tester.Advance(payload)
-	s.ErrorContains(result.Err, "a panic occured: input not accepted")
+	s.ErrorContains(result.Err, "a panic occurred: input not accepted")
 }
 
 func (s *PanicSuite) TestItRejectsInspect() {
 	payload := common.Hex2Bytes("deadbeef")
 	result := s.tester.Inspect(payload)
-	s.ErrorContains(result.Err, "a panic occured: input not accepted")
+	s.ErrorContains(result.Err, "a panic occurred: input not accepted")
 }

@@ -41,7 +41,7 @@ func (e *env) handle(input any) (err error) {
 			if ok {
 				err = panicErr
 			} else {
-				err = fmt.Errorf("a panic occured: %v", panicObj)
+				err = fmt.Errorf("a panic occurred: %v", panicObj)
 			}
 		}
 		if err != nil {
