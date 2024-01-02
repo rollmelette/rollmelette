@@ -8,10 +8,12 @@ import (
 	"log/slog"
 	"os"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/gligneul/rollmelette"
 	"github.com/gligneul/rollmelette/examples/addressapp"
 	"github.com/gligneul/rollmelette/examples/echoapp"
 	"github.com/gligneul/rollmelette/examples/errorapp"
+	"github.com/gligneul/rollmelette/examples/honeypotapp"
 	"github.com/gligneul/rollmelette/examples/panicapp"
 )
 
@@ -20,7 +22,10 @@ func main() {
 		"address": &addressapp.AddressApplication{},
 		"echo":    &echoapp.EchoApplication{},
 		"error":   &errorapp.ErrorApplication{},
-		"panic":   &panicapp.PanicApplication{},
+		"honeypot": &honeypotapp.HoneypotApplication{
+			Owner: common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"),
+		},
+		"panic": &panicapp.PanicApplication{},
 	}
 
 	if len(os.Args) < 2 {
