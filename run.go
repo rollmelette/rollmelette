@@ -19,6 +19,7 @@ type RunOpts struct {
 // NewRunOpts creates a RunOpts struct with sensible default values.
 func NewRunOpts() *RunOpts {
 	var opts RunOpts
+	opts.AddressBook = NewAddressBook()
 	if runtime.GOARCH == "riscv64" {
 		opts.RollupURL = "http://127.0.0.1:5004"
 	} else {
