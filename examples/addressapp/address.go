@@ -4,8 +4,6 @@
 package addressapp
 
 import (
-	"fmt"
-
 	"github.com/gligneul/rollmelette"
 )
 
@@ -16,10 +14,11 @@ type AddressApplication struct{}
 func (a *AddressApplication) Advance(
 	env rollmelette.Env,
 	metadata rollmelette.Metadata,
+	deposit rollmelette.Deposit,
 	payload []byte,
 ) error {
-	// The app address is obtained automatically by rollmelette; other inputs are rejected.
-	return fmt.Errorf("input not accepted")
+	// The app address is obtained automatically by rollmelette.
+	return nil
 }
 
 func (a *AddressApplication) Inspect(env rollmelette.EnvInspector, payload []byte) error {

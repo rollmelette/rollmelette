@@ -14,6 +14,7 @@ type EchoApplication struct{}
 func (a *EchoApplication) Advance(
 	env rollmelette.Env,
 	metadata rollmelette.Metadata,
+	deposit rollmelette.Deposit,
 	payload []byte,
 ) error {
 	env.Voucher(metadata.MsgSender, payload)

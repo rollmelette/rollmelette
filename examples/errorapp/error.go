@@ -15,6 +15,7 @@ type ErrorApplication struct{}
 func (a *ErrorApplication) Advance(
 	env rollmelette.Env,
 	metadata rollmelette.Metadata,
+	deposit rollmelette.Deposit,
 	payload []byte,
 ) error {
 	return fmt.Errorf("input not accepted")

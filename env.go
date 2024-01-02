@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -22,6 +23,7 @@ type env struct {
 	app           Application
 	appAddress    common.Address
 	appAddressSet bool
+	etherWallet   *etherWallet
 }
 
 func newEnv(ctx context.Context, addressBook AddressBook, rollup rollupEnv, app Application) *env {
@@ -30,6 +32,7 @@ func newEnv(ctx context.Context, addressBook AddressBook, rollup rollupEnv, app 
 		AddressBook: addressBook,
 		rollup:      rollup,
 		app:         app,
+		etherWallet: newEtherWallet(),
 	}
 }
 
@@ -70,10 +73,24 @@ func (e *env) handleAdvance(input *advanceInput) error {
 		"blockNumber", input.Metadata.BlockNumber,
 		"blockTimestamp", input.Metadata.BlockTimestamp,
 	)
-	if input.Metadata.MsgSender == e.AppAddressRelay {
-		return e.handleAppAddressRelay(input.Payload)
+	var (
+		err     error
+		deposit Deposit
+		payload []byte = input.Payload
+	)
+	switch input.Metadata.MsgSender {
+	case e.AppAddressRelay:
+		return e.handleAppAddressRelay(payload)
+	case e.EtherPortal:
+		deposit, payload, err = e.etherWallet.deposit(payload)
 	}
-	return e.app.Advance(e, input.Metadata, input.Payload)
+	if err != nil {
+		return err
+	}
+	if deposit != nil {
+		slog.Debug("received deposit", "deposit", deposit)
+	}
+	return e.app.Advance(e, input.Metadata, deposit, payload)
 }
 
 func (e *env) handleAppAddressRelay(payload []byte) error {
@@ -105,7 +122,15 @@ func (e *env) AppAddress() (common.Address, bool) {
 	return e.appAddress, e.appAddressSet
 }
 
-// EnvInspector interface //////////////////////////////////////////////////////////////////////////
+func (e *env) EtherAddresses() []common.Address {
+	return e.etherWallet.addresses()
+}
+
+func (e *env) EtherBalanceOf(address common.Address) *big.Int {
+	return e.etherWallet.balanceOf(address)
+}
+
+// Env interface ///////////////////////////////////////////////////////////////////////////////////
 
 func (e *env) Voucher(destination common.Address, payload []byte) int {
 	slog.Debug("sending voucher", "destination", destination, "payload", hexutil.Encode(payload))
@@ -123,4 +148,19 @@ func (e *env) Notice(payload []byte) int {
 		panic(err)
 	}
 	return index
+}
+
+func (e *env) EtherTransfer(src common.Address, dst common.Address, value *big.Int) error {
+	return e.etherWallet.transfer(src, dst, value)
+}
+
+func (e *env) EtherWithdraw(address common.Address, value *big.Int) (int, error) {
+	if !e.appAddressSet {
+		return 0, fmt.Errorf("can't withdraw ether without application address")
+	}
+	payload, err := e.etherWallet.withdraw(address, value)
+	if err != nil {
+		return 0, err
+	}
+	return e.Voucher(e.appAddress, payload), nil
 }

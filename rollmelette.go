@@ -5,7 +5,9 @@
 package rollmelette
 
 import (
+	"fmt"
 	"log/slog"
+	"math/big"
 	"os"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -13,17 +15,36 @@ import (
 	"github.com/mattn/go-isatty"
 )
 
+// MaxUint256 is the max value for uint256.
+var MaxUint256 *big.Int
+
+func init() {
+	one := big.NewInt(1)
+	// Left shift by 256 bits and then subtract 1 to get the max value of uint256.
+	MaxUint256 = new(big.Int).Sub(new(big.Int).Lsh(one, 256), one)
+}
+
+// Deposit represents an asset deposit to a portal.
+type Deposit interface {
+	fmt.Stringer
+
+	// GetSender returns the account that made the deposit.
+	GetSender() common.Address
+}
+
 // Application is the interface that should be implemented by the application developer.
-// The application has only two methods: one for the advance request and another for the inspect
-// request.
+// The application has one method for the advance request and another for the inspect request.
 type Application interface {
 
-	// Advance the application state.
-	// If this method returns an error, Rollmelette reverts the execution.
-	Advance(env Env, metadata Metadata, payload []byte) error
+	// Advance is called to advance the application state. It receives env to interact with the
+	// rollup environment, the advance input metadata, a interface representing the deposit if
+	// the input came from a portal, and the input payload. If this method returns an error,
+	// Rollmelette reverts the execution.
+	Advance(env Env, metadata Metadata, deposit Deposit, payload []byte) error
 
-	// Inspect the application state.
-	// If this method returns an error, Rollmelette reverts the execution.
+	// Inspect is called to inspect the application state. It receives env to read the rollup
+	// environment and the input payload. If this method returns an error, Rollmelette reverts
+	// the execution.
 	Inspect(env EnvInspector, payload []byte) error
 }
 
@@ -36,6 +57,12 @@ type EnvInspector interface {
 	// AppAddress returns the application address sent by the address relay contract.
 	// If the contract didn't send the address yet, the function returns false.
 	AppAddress() (common.Address, bool)
+
+	// EtherAddresses returns the list of addresses that have Ether.
+	EtherAddresses() []common.Address
+
+	// EtherBalanceOf returns the balance of the given address.
+	EtherBalanceOf(address common.Address) *big.Int
 }
 
 // Env is the entrypoint for the Rollup API and to Rollmelette's asset management.
@@ -47,6 +74,17 @@ type Env interface {
 
 	// Notice sends a notice and returns its index.
 	Notice(payload []byte) int
+
+	// EtherTransfer transfer the given amount of funds from source to destination.
+	// It returns an error if source doesn't have enough funds.
+	EtherTransfer(src common.Address, dst common.Address, value *big.Int) error
+
+	// EtherWithdraw withdraws the asset from the wallet, generates the voucher to withdraw
+	// it from the portal, and returns the voucher index.
+	// Before withdrawing Ether, the application must receive its contract address from the
+	// address relay contract.
+	// It returns an error if the address doesn't have enough funds.
+	EtherWithdraw(address common.Address, value *big.Int) (int, error)
 }
 
 // init configures the slog package with the tint handler.

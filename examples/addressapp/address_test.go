@@ -6,7 +6,6 @@ package addressapp
 import (
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/gligneul/rollmelette"
 	"github.com/stretchr/testify/suite"
 )
@@ -24,12 +23,6 @@ type AddressSuite struct {
 func (s *AddressSuite) SetupTest() {
 	s.app = new(AddressApplication)
 	s.tester = rollmelette.NewTester(s.app)
-}
-
-func (s *AddressSuite) TestItRejectsAdvance() {
-	payload := common.Hex2Bytes("deadbeef")
-	result := s.tester.Advance(payload)
-	s.ErrorContains(result.Err, "input not accepted")
 }
 
 func (s *AddressSuite) TestItAcceptsTheAppAddress() {

@@ -14,6 +14,7 @@ type PanicApplication struct{}
 func (a *PanicApplication) Advance(
 	env rollmelette.Env,
 	metadata rollmelette.Metadata,
+	deposit rollmelette.Deposit,
 	payload []byte,
 ) error {
 	panic("input not accepted")
