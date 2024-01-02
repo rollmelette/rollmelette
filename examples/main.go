@@ -4,16 +4,23 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"os"
 
 	"github.com/gligneul/rollmelette"
+	"github.com/gligneul/rollmelette/examples/addressapp"
+	"github.com/gligneul/rollmelette/examples/echoapp"
+	"github.com/gligneul/rollmelette/examples/errorapp"
+	"github.com/gligneul/rollmelette/examples/panicapp"
 )
 
 func main() {
 	examples := map[string]rollmelette.Application{
-		"address": &AddressApplication{},
-		"echo":    &EchoApplication{},
+		"address": &addressapp.AddressApplication{},
+		"echo":    &echoapp.EchoApplication{},
+		"error":   &errorapp.ErrorApplication{},
+		"panic":   &panicapp.PanicApplication{},
 	}
 
 	if len(os.Args) < 2 {
@@ -28,7 +35,7 @@ func main() {
 	}
 
 	opts := rollmelette.NewRunOpts()
-	err := rollmelette.Run(opts, app)
+	err := rollmelette.Run(context.Background(), opts, app)
 	if err != nil {
 		slog.Error("application exited with error", "error", err)
 		os.Exit(1)
