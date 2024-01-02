@@ -1,5 +1,9 @@
 # Rollmelette
 
+![CI](https://github.com/gligneul/rollmelette/actions/workflows/ci.yaml/badge.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/gligneul/rollmelette)](https://goreportcard.com/report/github.com/gligneul/rollmelette)
+[![GoDoc](https://img.shields.io/static/v1?label=godoc&message=reference&color=blue)](https://pkg.go.dev/github.com/gligneul/rollmelette)
+
 Rollmelette is a high-level framework for Cartesi Rollups in Go.
 
 The main objective of Rollmelette is to facilitate the development of the Cartesi-application back-end.
