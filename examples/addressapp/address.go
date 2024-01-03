@@ -4,6 +4,8 @@
 package addressapp
 
 import (
+	"fmt"
+
 	"github.com/gligneul/rollmelette"
 )
 
@@ -18,7 +20,8 @@ func (a *AddressApplication) Advance(
 	payload []byte,
 ) error {
 	// The app address is obtained automatically by rollmelette.
-	return nil
+	// Other inputs are rejected.
+	return fmt.Errorf("reject")
 }
 
 func (a *AddressApplication) Inspect(env rollmelette.EnvInspector, payload []byte) error {

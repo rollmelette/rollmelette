@@ -11,29 +11,29 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
+var payload = common.Hex2Bytes("deadbeef")
+var msgSender = common.HexToAddress("0xfafafafafafafafafafafafafafafafafafafafa")
+
 func TestErrorSuite(t *testing.T) {
 	suite.Run(t, new(ErrorSuite))
 }
 
 type ErrorSuite struct {
 	suite.Suite
-	app    *ErrorApplication
 	tester *rollmelette.Tester
 }
 
 func (s *ErrorSuite) SetupTest() {
-	s.app = new(ErrorApplication)
-	s.tester = rollmelette.NewTester(s.app)
+	app := new(ErrorApplication)
+	s.tester = rollmelette.NewTester(app)
 }
 
 func (s *ErrorSuite) TestItRejectsAdvance() {
-	payload := common.Hex2Bytes("deadbeef")
-	result := s.tester.Advance(payload)
+	result := s.tester.Advance(msgSender, payload)
 	s.ErrorContains(result.Err, "input not accepted")
 }
 
 func (s *ErrorSuite) TestItRejectsInspect() {
-	payload := common.Hex2Bytes("deadbeef")
 	result := s.tester.Inspect(payload)
 	s.ErrorContains(result.Err, "input not accepted")
 }

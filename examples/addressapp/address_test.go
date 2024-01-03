@@ -6,9 +6,13 @@ package addressapp
 import (
 	"testing"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/gligneul/rollmelette"
 	"github.com/stretchr/testify/suite"
 )
+
+var msgSender = common.HexToAddress("0xfafafafafafafafafafafafafafafafafafafafa")
+var appAddress = common.HexToAddress("0xfefefefefefefefefefefefefefefefefefefefe")
 
 func TestAddressSuite(t *testing.T) {
 	suite.Run(t, new(AddressSuite))
@@ -16,13 +20,17 @@ func TestAddressSuite(t *testing.T) {
 
 type AddressSuite struct {
 	suite.Suite
-	app    *AddressApplication
 	tester *rollmelette.Tester
 }
 
 func (s *AddressSuite) SetupTest() {
-	s.app = new(AddressApplication)
-	s.tester = rollmelette.NewTester(s.app)
+	app := new(AddressApplication)
+	s.tester = rollmelette.NewTester(app)
+}
+
+func (s *AddressSuite) TestItRejectsAdvance() {
+	result := s.tester.Advance(msgSender, nil)
+	s.ErrorContains(result.Err, "reject")
 }
 
 func (s *AddressSuite) TestItAcceptsTheAppAddress() {
@@ -32,12 +40,12 @@ func (s *AddressSuite) TestItAcceptsTheAppAddress() {
 	s.Empty(inspectResult.Reports)
 
 	// Send address
-	advanceResult := s.tester.RelayAppAddress()
+	advanceResult := s.tester.RelayAppAddress(appAddress)
 	s.Nil(advanceResult.Err)
 
 	// Get address from inspect
 	inspectResult = s.tester.Inspect(nil)
 	s.Nil(inspectResult.Err)
 	s.Len(inspectResult.Reports, 1)
-	s.Equal(s.tester.AppAddress[:], inspectResult.Reports[0].Payload)
+	s.Equal(appAddress[:], inspectResult.Reports[0].Payload)
 }

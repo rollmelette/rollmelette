@@ -11,24 +11,25 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
+var payload = common.Hex2Bytes("deadbeef")
+var msgSender = common.HexToAddress("0xfafafafafafafafafafafafafafafafafafafafa")
+
 func TestEchoSuite(t *testing.T) {
 	suite.Run(t, new(EchoSuite))
 }
 
 type EchoSuite struct {
 	suite.Suite
-	app    *EchoApplication
 	tester *rollmelette.Tester
 }
 
 func (s *EchoSuite) SetupTest() {
-	s.app = new(EchoApplication)
-	s.tester = rollmelette.NewTester(s.app)
+	app := new(EchoApplication)
+	s.tester = rollmelette.NewTester(app)
 }
 
 func (s *EchoSuite) TestAdvance() {
-	payload := common.Hex2Bytes("deadbeef")
-	result := s.tester.Advance(payload)
+	result := s.tester.Advance(msgSender, payload)
 	s.Nil(result.Err)
 	s.Len(result.Vouchers, 1)
 	s.Len(result.Notices, 1)
@@ -40,7 +41,6 @@ func (s *EchoSuite) TestAdvance() {
 }
 
 func (s *EchoSuite) TestInspect() {
-	payload := common.Hex2Bytes("deadbeef")
 	result := s.tester.Inspect(payload)
 	s.Nil(result.Err)
 	s.Len(result.Reports, 1)

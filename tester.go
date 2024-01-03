@@ -5,6 +5,7 @@ package rollmelette
 
 import (
 	"context"
+	"math/big"
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -12,52 +13,71 @@ import (
 
 // TestAdvanceResult is the result of the test advance function.
 type TestAdvanceResult struct {
-	RollupMock
+	Vouchers []TestVoucher
+	Notices  []TestNotice
+	Reports  []TestReport
 	Metadata
 	Err error
 }
 
 // TestInspectResult
 type TestInspectResult struct {
-	Reports []ReportMock
+	Reports []TestReport
 	Err     error
 }
 
 // Tester is an unit tester for the Application.
 type Tester struct {
-
-	// MsgSender is forwarded to the metadata when sending something.
-	MsgSender common.Address
-
-	// AppAddress is the address of the application.
-	AppAddress common.Address
-
-	rollup     *RollupMock
+	rollup     *rollupMock
+	book       AddressBook
 	env        *env
 	inputIndex int
 }
 
 // NewTester creates a Tester for the given application
 func NewTester(app Application) *Tester {
-	rollup := &RollupMock{}
+	rollup := &rollupMock{}
+	book := NewAddressBook()
 	return &Tester{
-		MsgSender:  common.HexToAddress("0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"),
-		AppAddress: common.HexToAddress("0x70ac08179605AF2D9e75782b8DEcDD3c22aA4D0C"),
 		rollup:     rollup,
-		env:        newEnv(context.Background(), NewAddressBook(), rollup, app),
+		book:       book,
+		env:        newEnv(context.Background(), book, rollup, app),
 		inputIndex: 0,
 	}
 }
 
+// Book returns the address book used by the tester.
+func (t *Tester) Book() AddressBook {
+	return t.book
+}
+
 // Advance sends an advance input to the application.
 // It returns the metadata sent to the app and the outputs received from the app.
-func (t *Tester) Advance(payload []byte) TestAdvanceResult {
-	return t.sendAdvance(t.MsgSender, payload)
+func (t *Tester) Advance(msgSender common.Address, payload []byte) TestAdvanceResult {
+	return t.sendAdvance(msgSender, payload)
 }
 
 // RelayAppAddress simulates an advance input from the app address relay.
-func (t *Tester) RelayAppAddress() TestAdvanceResult {
-	return t.sendAdvance(t.env.AppAddressRelay, t.AppAddress[:])
+func (t *Tester) RelayAppAddress(appAddress common.Address) TestAdvanceResult {
+	return t.sendAdvance(t.env.AppAddressRelay, appAddress[:])
+}
+
+// DepositEther simulates an advance input from the Ether portal.
+func (t *Tester) DepositEther(
+	msgSender common.Address,
+	value *big.Int,
+	payload []byte,
+) TestAdvanceResult {
+	if value.Cmp(MaxUint256) > 0 {
+		panic("value too big")
+	} else if value.Cmp(big.NewInt(0)) < 0 {
+		panic("negative value")
+	}
+	portalPayload := make([]byte, 0, 20+32+len(payload))
+	portalPayload = append(portalPayload, msgSender[:]...)
+	portalPayload = append(portalPayload, value.FillBytes(make([]byte, 32))...)
+	portalPayload = append(portalPayload, payload...)
+	return t.sendAdvance(t.env.EtherPortal, portalPayload)
 }
 
 // Inspect sends an inspect input to the application.
@@ -89,8 +109,10 @@ func (t *Tester) sendAdvance(msgSender common.Address, payload []byte) TestAdvan
 	err := t.env.handle(&input)
 	t.inputIndex++
 	return TestAdvanceResult{
-		RollupMock: *t.rollup,
-		Metadata:   metadata,
-		Err:        err,
+		Vouchers: t.rollup.Vouchers,
+		Notices:  t.rollup.Notices,
+		Reports:  t.rollup.Reports,
+		Metadata: metadata,
+		Err:      err,
 	}
 }

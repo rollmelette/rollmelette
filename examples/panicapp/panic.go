@@ -4,6 +4,8 @@
 package panicapp
 
 import (
+	"fmt"
+
 	"github.com/gligneul/rollmelette"
 )
 
@@ -21,5 +23,5 @@ func (a *PanicApplication) Advance(
 }
 
 func (a *PanicApplication) Inspect(env rollmelette.EnvInspector, payload []byte) error {
-	panic("input not accepted")
+	panic(fmt.Errorf("input not accepted"))
 }

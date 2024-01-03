@@ -9,52 +9,52 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-// VoucherMock represents a voucher received by the mock.
-type VoucherMock struct {
+// TestVoucher represents a voucher received by the mock.
+type TestVoucher struct {
 	Destination common.Address
 	Payload     []byte
 }
 
-// NoticeMock represents a notice received by the mock.
-type NoticeMock struct {
+// TestNotice represents a notice received by the mock.
+type TestNotice struct {
 	Payload []byte
 }
 
-// ReportMock represents a report received by the mock.
-type ReportMock struct {
+// TestReport represents a report received by the mock.
+type TestReport struct {
 	Payload []byte
 }
 
 // rollupHttp implements the Rollup API by calling the Rollup HTTP server.
-type RollupMock struct {
-	Vouchers []VoucherMock
-	Notices  []NoticeMock
-	Reports  []ReportMock
+type rollupMock struct {
+	Vouchers []TestVoucher
+	Notices  []TestNotice
+	Reports  []TestReport
 }
 
 // rollup interface ////////////////////////////////////////////////////////////////////////////////
 
-func (m *RollupMock) sendVoucher(
+func (m *rollupMock) sendVoucher(
 	ctx context.Context,
 	destination common.Address,
 	payload []byte,
 ) (int, error) {
-	m.Vouchers = append(m.Vouchers, VoucherMock{
+	m.Vouchers = append(m.Vouchers, TestVoucher{
 		Destination: destination,
 		Payload:     payload,
 	})
 	return len(m.Vouchers), nil
 }
 
-func (m *RollupMock) sendNotice(ctx context.Context, payload []byte) (int, error) {
-	m.Notices = append(m.Notices, NoticeMock{
+func (m *rollupMock) sendNotice(ctx context.Context, payload []byte) (int, error) {
+	m.Notices = append(m.Notices, TestNotice{
 		Payload: payload,
 	})
 	return len(m.Notices), nil
 }
 
-func (m *RollupMock) sendReport(ctx context.Context, payload []byte) error {
-	m.Reports = append(m.Reports, ReportMock{
+func (m *rollupMock) sendReport(ctx context.Context, payload []byte) error {
+	m.Reports = append(m.Reports, TestReport{
 		Payload: payload,
 	})
 	return nil
@@ -62,7 +62,7 @@ func (m *RollupMock) sendReport(ctx context.Context, payload []byte) error {
 
 // mock functions /////////////////////////////////////////////////////////////////////////////////
 
-func (m *RollupMock) reset() {
+func (m *rollupMock) reset() {
 	m.Vouchers = nil
 	m.Notices = nil
 	m.Reports = nil

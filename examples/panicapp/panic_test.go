@@ -11,29 +11,29 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
+var payload = common.Hex2Bytes("deadbeef")
+var msgSender = common.HexToAddress("0xfafafafafafafafafafafafafafafafafafafafa")
+
 func TestPanicSuite(t *testing.T) {
 	suite.Run(t, new(PanicSuite))
 }
 
 type PanicSuite struct {
 	suite.Suite
-	app    *PanicApplication
 	tester *rollmelette.Tester
 }
 
 func (s *PanicSuite) SetupTest() {
-	s.app = new(PanicApplication)
-	s.tester = rollmelette.NewTester(s.app)
+	app := new(PanicApplication)
+	s.tester = rollmelette.NewTester(app)
 }
 
 func (s *PanicSuite) TestItRejectsAdvance() {
-	payload := common.Hex2Bytes("deadbeef")
-	result := s.tester.Advance(payload)
+	result := s.tester.Advance(msgSender, payload)
 	s.ErrorContains(result.Err, "a panic occurred: input not accepted")
 }
 
 func (s *PanicSuite) TestItRejectsInspect() {
-	payload := common.Hex2Bytes("deadbeef")
 	result := s.tester.Inspect(payload)
-	s.ErrorContains(result.Err, "a panic occurred: input not accepted")
+	s.ErrorContains(result.Err, "input not accepted")
 }
