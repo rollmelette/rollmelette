@@ -31,7 +31,7 @@ func (s *EtherWalletSuite) SetupTest() {
 func (s *EtherWalletSuite) TestDepositString() {
 	value := big.NewInt(123000000000000000)
 	deposit := &EtherDeposit{s.src, value}
-	expected := "0xfafafafafafafafafafafafafafafafafafafafa deposited 0.123000000000000000 Ether"
+	expected := "0xFafafAfafAFaFAFaFafafafAfaFaFAfAfAfAFaFA deposited 0.123000000000000000 Ether"
 	s.Equal(expected, deposit.String())
 }
 
