@@ -80,6 +80,27 @@ func (t *Tester) DepositEther(
 	return t.sendAdvance(t.env.EtherPortal, portalPayload)
 }
 
+// DepositERC20 simulates an advance input from the ERC20 portal.
+func (t *Tester) DepositERC20(
+	token common.Address,
+	msgSender common.Address,
+	amount *big.Int,
+	payload []byte,
+) TestAdvanceResult {
+	if amount.Cmp(MaxUint256) > 0 {
+		panic("value too big")
+	} else if amount.Cmp(big.NewInt(0)) < 0 {
+		panic("negative value")
+	}
+	portalPayload := make([]byte, 0, 1+20+20+32+len(payload))
+	portalPayload = append(portalPayload, 1)
+	portalPayload = append(portalPayload, token[:]...)
+	portalPayload = append(portalPayload, msgSender[:]...)
+	portalPayload = append(portalPayload, amount.FillBytes(make([]byte, 32))...)
+	portalPayload = append(portalPayload, payload...)
+	return t.sendAdvance(t.env.ERC20Portal, portalPayload)
+}
+
 // Inspect sends an inspect input to the application.
 // It returns the outputs received from the app.
 func (t *Tester) Inspect(payload []byte) TestInspectResult {

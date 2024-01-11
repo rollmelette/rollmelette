@@ -12,5 +12,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added abstraction on top of the Rollup HTTP API.
 - Added functions to write unit-tests for rollmelette applications.
 - Added Ether wallet.
+- Added ERC20 wallet.
 - Added application examples.
 - Added integration tests with NoNodo.

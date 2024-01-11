@@ -26,11 +26,6 @@ type EtherDeposit struct {
 	Value *big.Int
 }
 
-// GetSender returns the account that made the deposit.
-func (d *EtherDeposit) GetSender() common.Address {
-	return d.Sender
-}
-
 func (d *EtherDeposit) String() string {
 	value := etherString(d.Value)
 	return fmt.Sprintf("%v deposited %v Ether", d.Sender, value)

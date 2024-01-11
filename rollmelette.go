@@ -27,9 +27,6 @@ func init() {
 // Deposit represents an asset deposit to a portal.
 type Deposit interface {
 	fmt.Stringer
-
-	// GetSender returns the account that made the deposit.
-	GetSender() common.Address
 }
 
 // Application is the interface that should be implemented by the application developer.
@@ -63,6 +60,15 @@ type EnvInspector interface {
 
 	// EtherBalanceOf returns the balance of the given address.
 	EtherBalanceOf(address common.Address) *big.Int
+
+	// ERC20Tokens returns the list of tokens that have a non-zero balance in the application.
+	ERC20Tokens() []common.Address
+
+	// ERC20Addresses returns the list of addresses taht have the givent token.
+	ERC20Addresses(token common.Address) []common.Address
+
+	// ERC20BalanceOf returns the balance of the given address for the given token.
+	ERC20BalanceOf(token common.Address, address common.Address) *big.Int
 }
 
 // Env is the entrypoint for the Rollup API and to Rollmelette's asset management.
@@ -75,16 +81,25 @@ type Env interface {
 	// Notice sends a notice and returns its index.
 	Notice(payload []byte) int
 
-	// EtherTransfer transfer the given amount of funds from source to destination.
+	// EtherTransfer transfers the given amount of funds from source to destination.
 	// It returns an error if source doesn't have enough funds.
 	EtherTransfer(src common.Address, dst common.Address, value *big.Int) error
 
 	// EtherWithdraw withdraws the asset from the wallet, generates the voucher to withdraw
-	// it from the portal, and returns the voucher index.
+	// it from the application contract, and returns the voucher index.
 	// Before withdrawing Ether, the application must receive its contract address from the
 	// address relay contract.
 	// It returns an error if the address doesn't have enough funds.
 	EtherWithdraw(address common.Address, value *big.Int) (int, error)
+
+	// ERC20Transfer transfers the given amount of tokens from source to destination.
+	// It returns an error if source doesn't have enough funds.
+	ERC20Transfer(token common.Address, src common.Address, dst common.Address, value *big.Int) error
+
+	// ERC20Withdraw withdraws the token from the wallet, generates the voucher to withdraw it
+	// from the ERC20 contract, and returns the voucher index.
+	// It returns an error if the address doesn't have enough funds.
+	ERC20Withdraw(token common.Address, address common.Address, value *big.Int) (int, error)
 }
 
 // init configures the slog package with the tint handler.

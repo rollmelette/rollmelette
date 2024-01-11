@@ -24,6 +24,7 @@ type env struct {
 	appAddress    common.Address
 	appAddressSet bool
 	etherWallet   *etherWallet
+	erc20Wallet   *erc20Wallet
 }
 
 func newEnv(ctx context.Context, addressBook AddressBook, rollup rollupEnv, app Application) *env {
@@ -33,6 +34,7 @@ func newEnv(ctx context.Context, addressBook AddressBook, rollup rollupEnv, app 
 		rollup:      rollup,
 		app:         app,
 		etherWallet: newEtherWallet(),
+		erc20Wallet: newErc20Wallet(),
 	}
 }
 
@@ -83,6 +85,8 @@ func (e *env) handleAdvance(input *advanceInput) error {
 		return e.handleAppAddressRelay(payload)
 	case e.EtherPortal:
 		deposit, payload, err = e.etherWallet.deposit(payload)
+	case e.ERC20Portal:
+		deposit, payload, err = e.erc20Wallet.deposit(payload)
 	}
 	if err != nil {
 		return err
@@ -130,6 +134,18 @@ func (e *env) EtherBalanceOf(address common.Address) *big.Int {
 	return e.etherWallet.balanceOf(address)
 }
 
+func (e *env) ERC20Tokens() []common.Address {
+	return e.erc20Wallet.tokens()
+}
+
+func (e *env) ERC20Addresses(token common.Address) []common.Address {
+	return e.erc20Wallet.addresses(token)
+}
+
+func (e *env) ERC20BalanceOf(token common.Address, address common.Address) *big.Int {
+	return e.erc20Wallet.balanceOf(token, address)
+}
+
 // Env interface ///////////////////////////////////////////////////////////////////////////////////
 
 func (e *env) Voucher(destination common.Address, payload []byte) int {
@@ -163,4 +179,25 @@ func (e *env) EtherWithdraw(address common.Address, value *big.Int) (int, error)
 		return 0, err
 	}
 	return e.Voucher(e.appAddress, payload), nil
+}
+
+func (e *env) ERC20Transfer(
+	token common.Address,
+	src common.Address,
+	dst common.Address,
+	value *big.Int,
+) error {
+	return e.erc20Wallet.transfer(token, src, dst, value)
+}
+
+func (e *env) ERC20Withdraw(
+	token common.Address,
+	address common.Address,
+	value *big.Int,
+) (int, error) {
+	payload, err := e.erc20Wallet.withdraw(token, address, value)
+	if err != nil {
+		return 0, err
+	}
+	return e.Voucher(e.ERC20Portal, payload), nil
 }

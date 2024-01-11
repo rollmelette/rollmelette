@@ -127,11 +127,11 @@ func (r *rollupHttp) sendPost(ctx context.Context, route string, request any) (*
 		return nil, fmt.Errorf("rollup: serialize request: %w", err)
 	}
 	endpoint := fmt.Sprintf("%v/%v", r.url, route)
-	req, err := http.NewRequest(http.MethodPost, endpoint, bytes.NewBuffer(body))
+	req, err := http.NewRequestWithContext(
+		ctx, http.MethodPost, endpoint, bytes.NewBuffer(body))
 	if err != nil {
 		return nil, fmt.Errorf("rollup: create request: %w", err)
 	}
-	req = req.WithContext(ctx)
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
