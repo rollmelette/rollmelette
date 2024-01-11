@@ -127,7 +127,7 @@ func (w *erc20Wallet) deposit(payload []byte) (Deposit, []byte, error) {
 		return nil, nil, fmt.Errorf("invalid erc20 deposit size; got %v", len(payload))
 	}
 
-	// TODO this will be removed in rollups contracts v2.0
+	// This field will be removed in rollups contracts v2.0
 	if payload[0] == 0 {
 		return nil, nil, fmt.Errorf("received failed erc20 transfer")
 	}

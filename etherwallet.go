@@ -123,10 +123,11 @@ func (w *etherWallet) withdraw(address common.Address, value *big.Int) ([]byte, 
 
 // etherString generates a string with the Ether value given the Wei value.
 func etherString(wei *big.Int) string {
+	const weiPerEther = 1e18
+	const etherDecimal = 18
 	weiFloat := new(big.Float).SetInt(wei)
-	tenToEighteen := new(big.Float).SetFloat64(1e18)
-	etherFloat := new(big.Float).Quo(weiFloat, tenToEighteen)
-	return etherFloat.Text('f', 18)
+	etherFloat := new(big.Float).Quo(weiFloat, big.NewFloat(weiPerEther))
+	return etherFloat.Text('f', etherDecimal)
 }
 
 // encodeEtherWithdraw encodes the voucher to withdraw the asset from the portal.

@@ -203,8 +203,7 @@ func parseInspectInput(data json.RawMessage) (any, error) {
 }
 
 func checkStatusOk(resp *http.Response) error {
-	statusOk := resp.StatusCode >= 200 && resp.StatusCode < 300
-	if !statusOk {
+	if !(resp.StatusCode >= http.StatusOK && resp.StatusCode < http.StatusMultipleChoices) {
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return fmt.Errorf("http: read body: %w", err)

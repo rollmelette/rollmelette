@@ -98,7 +98,7 @@ func (e *env) handleAdvance(input *advanceInput) error {
 }
 
 func (e *env) handleAppAddressRelay(payload []byte) error {
-	if len(payload) != 20 {
+	if len(payload) != common.AddressLength {
 		return fmt.Errorf("invalid input from app address relay: %x", payload)
 	}
 	e.appAddress = (common.Address)(payload)

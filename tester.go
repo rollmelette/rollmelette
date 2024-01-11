@@ -73,9 +73,9 @@ func (t *Tester) DepositEther(
 	} else if value.Cmp(big.NewInt(0)) < 0 {
 		panic("negative value")
 	}
-	portalPayload := make([]byte, 0, 20+32+len(payload))
+	portalPayload := make([]byte, 0, common.AddressLength+common.HashLength+len(payload))
 	portalPayload = append(portalPayload, msgSender[:]...)
-	portalPayload = append(portalPayload, value.FillBytes(make([]byte, 32))...)
+	portalPayload = append(portalPayload, value.FillBytes(make([]byte, common.HashLength))...)
 	portalPayload = append(portalPayload, payload...)
 	return t.sendAdvance(t.env.EtherPortal, portalPayload)
 }
@@ -92,11 +92,11 @@ func (t *Tester) DepositERC20(
 	} else if amount.Cmp(big.NewInt(0)) < 0 {
 		panic("negative value")
 	}
-	portalPayload := make([]byte, 0, 1+20+20+32+len(payload))
+	portalPayload := make([]byte, 0, 1+common.AddressLength+2*common.HashLength+len(payload))
 	portalPayload = append(portalPayload, 1)
 	portalPayload = append(portalPayload, token[:]...)
 	portalPayload = append(portalPayload, msgSender[:]...)
-	portalPayload = append(portalPayload, amount.FillBytes(make([]byte, 32))...)
+	portalPayload = append(portalPayload, amount.FillBytes(make([]byte, common.HashLength))...)
 	portalPayload = append(portalPayload, payload...)
 	return t.sendAdvance(t.env.ERC20Portal, portalPayload)
 }

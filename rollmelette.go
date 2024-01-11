@@ -19,9 +19,10 @@ import (
 var MaxUint256 *big.Int
 
 func init() {
+	const bits = 256
 	one := big.NewInt(1)
 	// Left shift by 256 bits and then subtract 1 to get the max value of uint256.
-	MaxUint256 = new(big.Int).Sub(new(big.Int).Lsh(one, 256), one)
+	MaxUint256 = new(big.Int).Sub(new(big.Int).Lsh(one, bits), one)
 }
 
 // Deposit represents an asset deposit to a portal.
@@ -64,7 +65,7 @@ type EnvInspector interface {
 	// ERC20Tokens returns the list of tokens that have a non-zero balance in the application.
 	ERC20Tokens() []common.Address
 
-	// ERC20Addresses returns the list of addresses taht have the givent token.
+	// ERC20Addresses returns the list of addresses that have the given token.
 	ERC20Addresses(token common.Address) []common.Address
 
 	// ERC20BalanceOf returns the balance of the given address for the given token.
