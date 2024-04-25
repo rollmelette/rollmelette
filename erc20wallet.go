@@ -157,7 +157,7 @@ func (w *erc20Wallet) deposit(payload []byte) (Deposit, []byte, error) {
 // auxiliary functions /////////////////////////////////////////////////////////////////////////////
 
 // encodeERC20Withdraw encodes the voucher to withdraw the asset from the portal.
-func encodeERC20Withdraw(token common.Address, value *big.Int) []byte {
+func encodeERC20Withdraw(address common.Address, value *big.Int) []byte {
 	abiJson := `[{
 		"type": "function",
 		"name": "transfer",
@@ -170,7 +170,7 @@ func encodeERC20Withdraw(token common.Address, value *big.Int) []byte {
 	if err != nil {
 		log.Panicf("failed to decode ABI: %v", err)
 	}
-	voucher, err := abiInterface.Pack("transfer", token, value)
+	voucher, err := abiInterface.Pack("transfer", address, value)
 	if err != nil {
 		log.Panicf("failed to pack: %v", err)
 	}

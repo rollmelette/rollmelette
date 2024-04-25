@@ -199,5 +199,5 @@ func (e *env) ERC20Withdraw(
 	if err != nil {
 		return 0, err
 	}
-	return e.Voucher(e.ERC20Portal, payload), nil
+	return e.Voucher(token, payload), nil
 }
