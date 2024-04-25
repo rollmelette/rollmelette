@@ -9,12 +9,12 @@ import (
 	"os"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/gligneul/rollmelette"
-	"github.com/gligneul/rollmelette/examples/addressapp"
-	"github.com/gligneul/rollmelette/examples/echoapp"
-	"github.com/gligneul/rollmelette/examples/errorapp"
-	"github.com/gligneul/rollmelette/examples/honeypotapp"
-	"github.com/gligneul/rollmelette/examples/panicapp"
+	"github.com/rollmelette/rollmelette"
+	"github.com/rollmelette/rollmelette/examples/addressapp"
+	"github.com/rollmelette/rollmelette/examples/echoapp"
+	"github.com/rollmelette/rollmelette/examples/errorapp"
+	"github.com/rollmelette/rollmelette/examples/honeypotapp"
+	"github.com/rollmelette/rollmelette/examples/panicapp"
 )
 
 func main() {

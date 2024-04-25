@@ -9,7 +9,7 @@ import (
 	"os/exec"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/gligneul/rollmelette"
+	"github.com/rollmelette/rollmelette"
 )
 
 const ApplicationAddress = "0x70ac08179605AF2D9e75782b8DEcDD3c22aA4D0C"

@@ -15,8 +15,8 @@ import (
 
 	"github.com/Khan/genqlient/graphql"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/gligneul/rollmelette"
-	"github.com/gligneul/rollmelette/examples/echoapp"
+	"github.com/rollmelette/rollmelette"
+	"github.com/rollmelette/rollmelette/examples/echoapp"
 	"github.com/stretchr/testify/suite"
 	"golang.org/x/sync/errgroup"
 )

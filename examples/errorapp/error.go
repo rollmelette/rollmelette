@@ -6,7 +6,7 @@ package errorapp
 import (
 	"fmt"
 
-	"github.com/gligneul/rollmelette"
+	"github.com/rollmelette/rollmelette"
 )
 
 // ErrorApplication is an application that always returns an error; rejecting the input.

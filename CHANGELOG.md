@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.1]
 
+### Changed
+
+- Moved project from github.com/gligneul/rollmelette to github.com/rollmelette/rollmelette
+
 ### Fixed
 
 - Fixed ERC20 withdraw
