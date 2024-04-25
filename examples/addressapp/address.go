@@ -6,7 +6,7 @@ package addressapp
 import (
 	"fmt"
 
-	"github.com/gligneul/rollmelette"
+	"github.com/rollmelette/rollmelette"
 )
 
 // AddressApplication is an application that receives the app address in an advance input and

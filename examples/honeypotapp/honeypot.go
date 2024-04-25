@@ -8,7 +8,7 @@ import (
 	"log/slog"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/gligneul/rollmelette"
+	"github.com/rollmelette/rollmelette"
 )
 
 // HoneypotApplication is a honeypot[1] application that stores Ether.

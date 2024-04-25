@@ -4,7 +4,7 @@
 package echoapp
 
 import (
-	"github.com/gligneul/rollmelette"
+	"github.com/rollmelette/rollmelette"
 )
 
 // EchoApplication is an application that emits a voucher, a notice, and a report for each advance

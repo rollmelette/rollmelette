@@ -6,7 +6,7 @@ package panicapp
 import (
 	"fmt"
 
-	"github.com/gligneul/rollmelette"
+	"github.com/rollmelette/rollmelette"
 )
 
 // PanicApplication is an application that always panic. Rollmelette captures the panic and reject

@@ -1,4 +1,4 @@
-module github.com/gligneul/rollmelette
+module github.com/rollmelette/rollmelette
 
 go 1.21.1
 
