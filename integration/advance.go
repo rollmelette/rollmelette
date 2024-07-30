@@ -12,7 +12,7 @@ import (
 	"github.com/rollmelette/rollmelette"
 )
 
-const ApplicationAddress = "0x70ac08179605AF2D9e75782b8DEcDD3c22aA4D0C"
+const ApplicationAddress = "0xab7528bb862fb57e8a2bcd567a2e929a0be56a5e"
 const SenderAddress = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
 const TestMnemonic = "test test test test test test test test test test test junk"
 
