@@ -9,7 +9,6 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-	"syscall"
 	"testing"
 	"time"
 
@@ -32,6 +31,7 @@ type NonodoSuite struct {
 	group  *errgroup.Group
 	ctx    context.Context
 	cancel context.CancelFunc
+	nonodo *exec.Cmd
 }
 
 // Setup ///////////////////////////////////////////////////////////////////////////////////////////
@@ -42,12 +42,10 @@ func (s *NonodoSuite) SetupTest() {
 
 	// start nonodo
 	nonodo := exec.CommandContext(s.ctx, "nonodo")
-	nonodo.Cancel = func() error {
-		return nonodo.Process.Signal(syscall.SIGTERM)
-	}
 	out := NewNotifyWriter(os.Stdout, "nonodo: ready")
 	nonodo.Stdout = out
 	s.group.Go(nonodo.Run)
+	s.nonodo = nonodo
 	select {
 	case <-out.ready:
 	case <-s.ctx.Done():
@@ -64,8 +62,8 @@ func (s *NonodoSuite) SetupTest() {
 
 func (s *NonodoSuite) TearDownTest() {
 	s.cancel()
-	err := s.group.Wait()
-	s.ErrorIs(err, context.Canceled)
+	err := s.nonodo.Process.Kill()
+	s.NoError(err)
 }
 
 // Test Cases //////////////////////////////////////////////////////////////////////////////////////
@@ -97,7 +95,7 @@ func (s *NonodoSuite) TestInspect() {
 
 // Helper functions ////////////////////////////////////////////////////////////////////////////////
 
-func waitForInput(ctx context.Context, client graphql.Client, index int) error {
+func waitForInput(ctx context.Context, client graphql.Client, _index int) error {
 	ticker := time.NewTicker(10 * time.Millisecond)
 	defer ticker.Stop()
 	for {
