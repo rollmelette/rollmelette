@@ -20,8 +20,8 @@ type RunOpts struct {
 func NewRunOpts() *RunOpts {
 	var opts RunOpts
 	opts.AddressBook = NewAddressBook()
+	opts.RollupURL = "http://127.0.0.1:5004"
 	if runtime.GOARCH == "riscv64" {
-		opts.RollupURL = "http://127.0.0.1:5004"
 	} else {
 		opts.RollupURL = "http://127.0.0.1:8080/rollup"
 	}
