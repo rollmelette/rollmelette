@@ -5,7 +5,6 @@ package rollmelette
 
 import (
 	"context"
-	"runtime"
 )
 
 // RunOpts allows the application developer to pass some parameters to the run function.
@@ -21,10 +20,6 @@ func NewRunOpts() *RunOpts {
 	var opts RunOpts
 	opts.AddressBook = NewAddressBook()
 	opts.RollupURL = "http://127.0.0.1:5004"
-	if runtime.GOARCH == "riscv64" {
-	} else {
-		opts.RollupURL = "http://127.0.0.1:8080/rollup"
-	}
 	return &opts
 }
 
