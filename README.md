@@ -123,13 +123,13 @@ After some time, you should see the output below in your terminal.
 You can now send advance-state and inspect-state inputs to the Rollmelette application inside the Cartesi machine.
 
 ```
-8db686eb-validator-1  | host-runner: ENABLE_cartesi_NODE is not set, skip the host mode...
-8db686eb-validator-1  | Provisioning cartesi-machine snapshot...
-8db686eb-prompt-1     | Anvil running at http://localhost:8545
-8db686eb-prompt-1     | GraphQL running at http://localhost:8080/graphql
-8db686eb-prompt-1     | Inspect running at http://localhost:8080/inspect/
-8db686eb-prompt-1     | Explorer running at http://localhost:8080/explorer/
-8db686eb-prompt-1     | Press Ctrl+C to stop the node
+Attaching to prompt-1, validator-1
+validator-1  | 2024-07-30 20-40-15 info remote-cartesi-machine pid:119 ppid:72 Initializing server on localhost:0
+prompt-1     | Anvil running at http://localhost:8545
+prompt-1     | GraphQL running at http://localhost:8080/graphql
+prompt-1     | Inspect running at http://localhost:8080/inspect/
+prompt-1     | Explorer running at http://localhost:8080/explorer/
+prompt-1     | Press Ctrl+C to stop the node
 ```
 
 ## The Application Interface
