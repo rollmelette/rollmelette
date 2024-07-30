@@ -122,7 +122,7 @@ Once you built the Cartesi Machine snapshot, you can run the application with ca
 After some time, you should see the output below in your terminal.
 You can now send advance-state and inspect-state inputs to the Rollmelette application inside the Cartesi machine.
 
-```
+```bash
 Attaching to prompt-1, validator-1
 validator-1  | 2024-07-30 20-40-15 info remote-cartesi-machine pid:119 ppid:72 Initializing server on localhost:0
 prompt-1     | Anvil running at http://localhost:8545
