@@ -20,9 +20,7 @@ jobs:
     - name: Install nonodo
       working-directory: ${{ runner.temp }}
       run: |
-        wget https://github.com/gligneul/nonodo/releases/download/v0.1.0-beta/nonodo-v0.1.0-beta-linux-amd64.tar.gz
-        tar zxfv nonodo-v0.1.0-beta-linux-amd64.tar.gz
-        sudo mv nonodo /usr/local/bin
+        npm i -g nonodo
 
     - name: Lint
       uses: golangci/golangci-lint-action@v3
