@@ -2,7 +2,7 @@
 
 ![CI](https://github.com/gligneul/rollmelette/actions/workflows/ci.yaml/badge.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/gligneul/rollmelette)](https://goreportcard.com/report/github.com/gligneul/rollmelette)
-[![GoDoc](https://img.shields.io/static/v1?label=godoc&message=reference&color=blue)](https://pkg.go.dev/github.com/gligneul/rollmelette)
+[![GoDoc](https://img.shields.io/static/v1?label=godoc&message=reference&color=blue)](https://pkg.go.dev/github.com/rollmelette/rollmelette)
 [![codecov](https://codecov.io/gh/gligneul/rollmelette/graph/badge.svg?token=467YCJV8PQ)](https://codecov.io/gh/gligneul/rollmelette)
 
 ![Logo](./logo.png)
@@ -28,7 +28,7 @@ It offers an abstraction on top of the Rollups API, manages assets from portals,
 The recommended way of using Rollmelette is starting from the [project template][template].
 Creating a new repository from the template and starting your own project is possible on the template GitHub page.
 (Click the "Use this template" button.)
-The template contains the skeleton of a Rollmelette application and the build files to run this application with [sunodo][sunodo].
+The template contains the skeleton of a Rollmelette application and the build files to run this application with [cartesi][cartesi].
 
 ### Pre-requisites
 
@@ -36,8 +36,8 @@ Before developing applications with Rollmelette, ensure you have the following d
 
 - [Golang](https://go.dev/doc/install)
 - [Docker](https://docs.docker.com/desktop/)
-- [NoNodo](https://github.com/gligneul/nonodo#installation)
-- [Sunodo](https://docs.sunodo.io/guide/introduction/installing)
+- [NoNodo](https://github.com/Calindra/nonodo)
+- [Cartesi-CLI](https://docs.cartesi.io/cartesi-rollups/1.3/quickstart/)
 
 ### Sending advance-state inputs
 
@@ -46,14 +46,16 @@ NoNodo allows you to run the application in the host machine for quick prototypi
 You should see the following output in your terminal.
 
 ```
-[18:13:48.066] INF http: server is ready address=127.0.0.1:8080
-[18:13:48.066] INF nonodo: ready after=53.449896ms
+Http Rollups for development started at http://localhost:5004
+GraphQL running at http://localhost:8080/graphql
+Inspect running at http://localhost:8080/inspect/
+Press Ctrl+C to stop the node
 ```
 
-Then, you can send an advance input with the binary payload `0xDEADBEEF` to the application with the following sunodo command.
+Then, you can send an advance input with the binary payload `0xDEADBEEF` to the application with the following cartesi command.
 
 ```sh
-sunodo send generic \
+cartesi send generic \
     --dapp=0x70ac08179605AF2D9e75782b8DEcDD3c22aA4D0C \
     --chain-id=31337 \
     --rpc-url=http://127.0.0.1:8545 \
@@ -89,7 +91,7 @@ Notice the application receives the input as a binary payload; hence, the string
 
 The Rollmelette template contains a Dockerfile to build the RISC-V snapshot for the Cartesi Machine.
 To build this snapshot, run `make build`.
-Eventually, you will see the output below in the terminal, meaning Sunodo built the application successfully, and it is ready to run.
+Eventually, you will see the output below in the terminal, meaning cartesi built the application successfully, and it is ready to run.
 
 ```
          .
@@ -116,12 +118,12 @@ Storing machine: please wait
 
 ### Running in production mode
 
-Once you built the Cartesi Machine snapshot, you can run the application with Sunodo by running `make run`.
+Once you built the Cartesi Machine snapshot, you can run the application with cartesi by running `make run`.
 After some time, you should see the output below in your terminal.
 You can now send advance-state and inspect-state inputs to the Rollmelette application inside the Cartesi machine.
 
 ```
-8db686eb-validator-1  | host-runner: ENABLE_SUNODO_NODE is not set, skip the host mode...
+8db686eb-validator-1  | host-runner: ENABLE_cartesi_NODE is not set, skip the host mode...
 8db686eb-validator-1  | Provisioning cartesi-machine snapshot...
 8db686eb-prompt-1     | Anvil running at http://localhost:8545
 8db686eb-prompt-1     | GraphQL running at http://localhost:8080/graphql
@@ -423,25 +425,25 @@ The table below describes those examples.
 
 ---
 
-[nonodo]: http://github.com/gligneul/nonodo
-[sunodo]: https://docs.sunodo.io/
+[NoNodo]: https://github.com/Calindra/nonodo
+[Cartesi-CLI]: https://docs.cartesi.io/
 [template]: https://github.com/gligneul/rollmelette-template
 [solabi]: https://docs.soliditylang.org/en/latest/abi-spec.html
 [go-ethereum]: https://geth.ethereum.org/docs/developers/dapp-developer/native
 
 [abi.json]: https://pkg.go.dev/github.com/ethereum/go-ethereum/accounts/abi#JSON
 
-[roll.application]: https://pkg.go.dev/github.com/gligneul/rollmelette#Application
-[roll.book]: https://pkg.go.dev/github.com/gligneul/rollmelette#NewAddressBook
-[roll.deposit]: https://pkg.go.dev/github.com/gligneul/rollmelette#Deposit
-[roll.env]: https://pkg.go.dev/github.com/gligneul/rollmelette#Env
-[roll.envinspector]: https://pkg.go.dev/github.com/gligneul/rollmelette#EnvInspector
-[roll.metadata]: https://pkg.go.dev/github.com/gligneul/rollmelette#Metadata
-[roll.newtester]: https://pkg.go.dev/github.com/gligneul/rollmelette#NewTester
-[roll.run]: https://pkg.go.dev/github.com/gligneul/rollmelette#Run
-[roll.tester.advance]: https://pkg.go.dev/github.com/gligneul/rollmelette#Tester.Advance
-[roll.tester.depositerc20]: https://pkg.go.dev/github.com/gligneul/rollmelette#Tester.DepositERC20
-[roll.tester.depositether]: https://pkg.go.dev/github.com/gligneul/rollmelette#Tester.DepositEther
-[roll.tester]: https://pkg.go.dev/github.com/gligneul/rollmelette#Tester
-[roll.tester.inspect]: https://pkg.go.dev/github.com/gligneul/rollmelette#Tester.Inspect
-[roll.tester.relayappaddress]: https://pkg.go.dev/github.com/gligneul/rollmelette#Tester.RelayAppAddress
+[roll.application]: https://pkg.go.dev/github.com/rollmelette/rollmelette#Application
+[roll.book]: https://pkg.go.dev/github.com/rollmelette/rollmelette#NewAddressBook
+[roll.deposit]: https://pkg.go.dev/github.com/rollmelette/rollmelette#Deposit
+[roll.env]: https://pkg.go.dev/github.com/rollmelette/rollmelette#Env
+[roll.envinspector]: https://pkg.go.dev/github.com/rollmelette/rollmelette#EnvInspector
+[roll.metadata]: https://pkg.go.dev/github.com/rollmelette/rollmelette#Metadata
+[roll.newtester]: https://pkg.go.dev/github.com/rollmelette/rollmelette#NewTester
+[roll.run]: https://pkg.go.dev/github.com/rollmelette/rollmelette#Run
+[roll.tester.advance]: https://pkg.go.dev/github.com/rollmelette/rollmelette#Tester.Advance
+[roll.tester.depositerc20]: https://pkg.go.dev/github.com/rollmelette/rollmelette#Tester.DepositERC20
+[roll.tester.depositether]: https://pkg.go.dev/github.com/rollmelette/rollmelette#Tester.DepositEther
+[roll.tester]: https://pkg.go.dev/github.com/rollmelette/rollmelette#Tester
+[roll.tester.inspect]: https://pkg.go.dev/github.com/rollmelette/rollmelette#Tester.Inspect
+[roll.tester.relayappaddress]: https://pkg.go.dev/github.com/rollmelette/rollmelette#Tester.RelayAppAddress
