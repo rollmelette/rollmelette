@@ -62,7 +62,7 @@ func (s *NonodoSuite) SetupTest() {
 
 func (s *NonodoSuite) TearDownTest() {
 	s.cancel()
-	err := s.nonodo.Process.Kill()
+	err := exec.Command("pkill", "nonodo").Run()
 	s.NoError(err)
 }
 
