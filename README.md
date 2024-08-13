@@ -427,7 +427,7 @@ The table below describes those examples.
 
 [NoNodo]: https://github.com/Calindra/nonodo
 [Cartesi-CLI]: https://docs.cartesi.io/
-[template]: https://github.com/gligneul/rollmelette-template
+[template]: https://github.com/rollmelette/rollmelette-template
 [solabi]: https://docs.soliditylang.org/en/latest/abi-spec.html
 [go-ethereum]: https://geth.ethereum.org/docs/developers/dapp-developer/native
 
@@ -447,3 +447,23 @@ The table below describes those examples.
 [roll.tester]: https://pkg.go.dev/github.com/rollmelette/rollmelette#Tester
 [roll.tester.inspect]: https://pkg.go.dev/github.com/rollmelette/rollmelette#Tester.Inspect
 [roll.tester.relayappaddress]: https://pkg.go.dev/github.com/rollmelette/rollmelette#Tester.RelayAppAddress
+
+## Log Level Configuration
+
+Control logging verbosity with the `ROLLMELETTE_LOG_LEVEL` environment variable:
+
+- **-4**: Debug (Default)
+- **0**: Info
+- **4**: Warn
+- **8**: Error
+
+### Usage
+
+Set the log level before running your application:
+
+```bash
+export ROLLMELETTE_LOG_LEVEL=4
+./your-application
+```
+
+Without setting this variable, the default is `Debug`.

@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"math/big"
 	"os"
+	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/lmittmann/tint"
@@ -46,7 +47,7 @@ type Application interface {
 	Inspect(env EnvInspector, payload []byte) error
 }
 
-// EnvIspector is the entrypoint for the inspect functions of the Rollup API.
+// EnvInspector is the entrypoint for the inspect functions of the Rollup API.
 type EnvInspector interface {
 
 	// Report sends a report.
@@ -106,13 +107,20 @@ type Env interface {
 // init configures the slog package with the tint handler.
 func init() {
 	logOpts := new(tint.Options)
+
 	logOpts.Level = slog.LevelDebug
+	logLevelStr := os.Getenv("ROLLMELETTE_LOG_LEVEL")
+	if logLevelStr != "" {
+		if logLevel, err := strconv.Atoi(logLevelStr); err == nil {
+			logOpts.Level = slog.Level(logLevel)
+		}
+	}
 	logOpts.NoColor = !isatty.IsTerminal(os.Stdout.Fd())
 	// disable timestamp because it is irrelevant in the cartesi machine
 	logOpts.ReplaceAttr = func(groups []string, attr slog.Attr) slog.Attr {
 		if attr.Key == slog.TimeKey {
-			var zeroattr slog.Attr
-			return zeroattr
+			var zeroAttr slog.Attr
+			return zeroAttr
 		}
 		return attr
 	}
