@@ -162,11 +162,11 @@ func (e *env) EtherTransfer(src common.Address, dst common.Address, value *big.I
 }
 
 func (e *env) EtherWithdraw(address common.Address, value *big.Int) (int, error) {
-	payload, err := e.etherWallet.withdraw(address, value)
+	err := e.etherWallet.withdraw(address, value)
 	if err != nil {
 		return 0, err
 	}
-	return e.Voucher(e.appAddress, value, payload), nil
+	return e.Voucher(e.appAddress, value, nil), nil
 }
 
 func (e *env) ERC20Transfer(

@@ -5,13 +5,9 @@ package rollmelette
 
 import (
 	"fmt"
-	"log"
 	"log/slog"
 	"math/big"
 	"slices"
-	"strings"
-
-	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 )
 
@@ -110,13 +106,13 @@ func (w *etherWallet) transfer(src common.Address, dst common.Address, value *bi
 	return nil
 }
 
-func (w *etherWallet) withdraw(address common.Address, value *big.Int) ([]byte, error) {
+func (w *etherWallet) withdraw(address common.Address, value *big.Int) error {
 	newBalance := new(big.Int).Sub(w.balanceOf(address), value)
 	if newBalance.Sign() < 0 {
-		return nil, fmt.Errorf("insuficient funds")
+		return fmt.Errorf("insuficient funds")
 	}
 	w.setBalance(address, newBalance)
-	return encodeEtherWithdraw(address, value), nil
+	return nil
 }
 
 // auxiliary functions /////////////////////////////////////////////////////////////////////////////
@@ -128,27 +124,6 @@ func etherString(wei *big.Int) string {
 	weiFloat := new(big.Float).SetInt(wei)
 	etherFloat := new(big.Float).Quo(weiFloat, big.NewFloat(weiPerEther))
 	return etherFloat.Text('f', etherDecimal)
-}
-
-// encodeEtherWithdraw encodes the voucher to withdraw the asset from the portal.
-func encodeEtherWithdraw(address common.Address, value *big.Int) []byte {
-	abiJson := `[{
-		"type": "function",
-		"name": "withdrawEther",
-		"inputs": [
-			{"type": "address"},
-			{"type": "uint256"}
-		]
-	}]`
-	abiInterface, err := abi.JSON(strings.NewReader(abiJson))
-	if err != nil {
-		log.Panicf("failed to decode ABI: %v", err)
-	}
-	voucher, err := abiInterface.Pack("withdrawEther", address, value)
-	if err != nil {
-		log.Panicf("failed to pack: %v", err)
-	}
-	return voucher
 }
 
 // sortAddresses sorts a slice of addresses.
