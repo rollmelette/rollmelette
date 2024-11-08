@@ -7,26 +7,32 @@ import "github.com/ethereum/go-ethereum/common"
 
 // AddressBook contains the addresses of the rollups contracts.
 type AddressBook struct {
-	CartesiAppFactory   common.Address
-	AppAddressRelay     common.Address
-	ERC1155BatchPortal  common.Address
-	ERC1155SinglePortal common.Address
-	ERC20Portal         common.Address
-	ERC721Portal        common.Address
-	EtherPortal         common.Address
-	InputBox            common.Address
+	ApplicationFactory           common.Address
+	AuthorityFactory             common.Address
+	ERC1155BatchPortal           common.Address
+	ERC1155SinglePortal          common.Address
+	ERC20Portal                  common.Address
+	ERC721Portal                 common.Address
+	EtherPortal                  common.Address
+	InputBox                     common.Address
+	QuorumFactory                common.Address
+	SafeERC20Transfer            common.Address
+	SelfHostedApplicationFactory common.Address
 }
 
 // NewAddressBook returns the contract addresses for mainnet and devnet.
 func NewAddressBook() AddressBook {
 	return AddressBook{
-		CartesiAppFactory:   common.HexToAddress("0x7122cd1221C20892234186facfE8615e6743Ab02"),
-		AppAddressRelay:     common.HexToAddress("0xF5DE34d6BbC0446E2a45719E718efEbaaE179daE"),
-		ERC1155BatchPortal:  common.HexToAddress("0xedB53860A6B52bbb7561Ad596416ee9965B055Aa"),
-		ERC1155SinglePortal: common.HexToAddress("0x7CFB0193Ca87eB6e48056885E026552c3A941FC4"),
-		ERC20Portal:         common.HexToAddress("0x9C21AEb2093C32DDbC53eEF24B873BDCd1aDa1DB"),
-		ERC721Portal:        common.HexToAddress("0x237F8DD094C0e47f4236f12b4Fa01d6Dae89fb87"),
-		EtherPortal:         common.HexToAddress("0xFfdbe43d4c855BF7e0f105c400A50857f53AB044"),
-		InputBox:            common.HexToAddress("0x59b22D57D4f067708AB0c00552767405926dc768"),
+		ApplicationFactory:           common.HexToAddress("0xA1DA32BF664109D62208a1cb0d69aACc6a484873"),
+		AuthorityFactory:             common.HexToAddress("0xbDC5D42771A4Ae55eC7670AAdD2458D1d9C7C8A8"),
+		ERC1155BatchPortal:           common.HexToAddress("0x4a218D331C0933d7E3EB496ac901669f28D94981"),
+		ERC1155SinglePortal:          common.HexToAddress("0x2f0D587DD6EcF67d25C558f2e9c3839c579e5e38"),
+		ERC20Portal:                  common.HexToAddress("0xB0e28881FF7ee9CD5B1229d570540d74bce23D39"),
+		ERC721Portal:                 common.HexToAddress("0x874b3245ead7474Cb9f3b83cD1446dC522f6bd36"),
+		EtherPortal:                  common.HexToAddress("0xfa2292f6D85ea4e629B156A4f99219e30D12EE17"),
+		InputBox:                     common.HexToAddress("0x593E5BCf894D6829Dd26D0810DA7F064406aebB6"),
+		QuorumFactory:                common.HexToAddress("0x68C3d53a095f66A215a8bEe096Cd3Ba4fFB7bAb3"),
+		SafeERC20Transfer:            common.HexToAddress("0x817b126F242B5F184Fa685b4f2F91DC99D8115F9"),
+		SelfHostedApplicationFactory: common.HexToAddress("0x0678FAA399F0193Fb9212BE41590316D275b1392"),
 	}
 }

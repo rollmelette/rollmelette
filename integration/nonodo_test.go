@@ -41,8 +41,8 @@ func (s *NonodoSuite) SetupTest() {
 	s.group, s.ctx = errgroup.WithContext(s.ctx)
 
 	// start nonodo
-	nonodo := exec.CommandContext(s.ctx, "nonodo")
-	out := NewNotifyWriter(os.Stdout, "nonodo: ready")
+	nonodo := exec.CommandContext(s.ctx, "brunodo")
+	out := NewNotifyWriter(os.Stdout, "brunodo: ready")
 	nonodo.Stdout = out
 	s.group.Go(nonodo.Run)
 	s.nonodo = nonodo
@@ -62,7 +62,7 @@ func (s *NonodoSuite) SetupTest() {
 
 func (s *NonodoSuite) TearDownTest() {
 	s.cancel()
-	err := exec.Command("pkill", "nonodo").Run()
+	err := exec.Command("pkill", "brunodo").Run()
 	s.NoError(err)
 }
 

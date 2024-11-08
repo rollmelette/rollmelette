@@ -5,6 +5,7 @@ package rollmelette
 
 import (
 	"context"
+	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -12,6 +13,7 @@ import (
 // TestVoucher represents a voucher received by the mock.
 type TestVoucher struct {
 	Destination common.Address
+	Value       *big.Int
 	Payload     []byte
 }
 
@@ -37,10 +39,12 @@ type rollupMock struct {
 func (m *rollupMock) sendVoucher(
 	ctx context.Context,
 	destination common.Address,
+	value *big.Int,
 	payload []byte,
 ) (int, error) {
 	m.Vouchers = append(m.Vouchers, TestVoucher{
 		Destination: destination,
+		Value:       value,
 		Payload:     payload,
 	})
 	return len(m.Vouchers), nil

@@ -10,7 +10,6 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
-	"github.com/rollmelette/rollmelette/examples/addressapp"
 	"github.com/rollmelette/rollmelette/examples/echoapp"
 	"github.com/rollmelette/rollmelette/examples/errorapp"
 	"github.com/rollmelette/rollmelette/examples/honeypotapp"
@@ -19,7 +18,6 @@ import (
 
 func main() {
 	examples := map[string]rollmelette.Application{
-		"address": &addressapp.AddressApplication{},
 		"echo":    &echoapp.EchoApplication{},
 		"error":   &errorapp.ErrorApplication{},
 		"honeypot": &honeypotapp.HoneypotApplication{
