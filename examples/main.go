@@ -18,8 +18,8 @@ import (
 
 func main() {
 	examples := map[string]rollmelette.Application{
-		"echo":    &echoapp.EchoApplication{},
-		"error":   &errorapp.ErrorApplication{},
+		"echo":  &echoapp.EchoApplication{},
+		"error": &errorapp.ErrorApplication{},
 		"honeypot": &honeypotapp.HoneypotApplication{
 			Owner: common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"),
 		},

@@ -113,7 +113,7 @@ func (e *env) Report(payload []byte) {
 	}
 }
 
-func (e *env) AppAddress() (common.Address) {
+func (e *env) AppAddress() common.Address {
 	return e.appAddress
 }
 
