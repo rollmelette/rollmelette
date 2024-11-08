@@ -17,10 +17,10 @@ jobs:
     - name: Install Foundry
       uses: foundry-rs/foundry-toolchain@v1
 
-    - name: Install nonodo
+    - name: Install brunodo (v2)
       working-directory: ${{ runner.temp }}
       run: |
-        npm i -g nonodo
+        npm i -g brunodo
 
     - name: Lint
       uses: golangci/golangci-lint-action@v3
