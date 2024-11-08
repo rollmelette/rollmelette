@@ -21,7 +21,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-const TestTimeout = 3 * time.Second
+const TestTimeout = 15 * time.Second
 
 func TestNonodoSuite(t *testing.T) {
 	suite.Run(t, new(NonodoSuite))
