@@ -101,16 +101,9 @@ func (s *EtherWalletSuite) TestBalanceOverflowTransfer() {
 	s.ErrorContains(err, "balance overflow")
 }
 
-func (s *EtherWalletSuite) TestEncodeWithdraw() {
-	voucher := encodeEtherWithdraw(s.src, big.NewInt(100))
-	expected := common.Hex2Bytes("522f6815000000000000000000000000fafafafafafafafafafafafafafafafafafafafa0000000000000000000000000000000000000000000000000000000000000064")
-	s.Equal(expected, voucher)
-}
-
 func (s *EtherWalletSuite) TestInsuficientFundsWithdraw() {
 	s.wallet.setBalance(s.src, big.NewInt(50))
-	voucher, err := s.wallet.withdraw(s.src, big.NewInt(100))
-	s.Nil(voucher)
+	err := s.wallet.withdraw(s.src, big.NewInt(100))
 	s.ErrorContains(err, "insuficient funds")
 	balance := s.wallet.balanceOf(s.src)
 	s.Equal(big.NewInt(50), balance)
@@ -118,9 +111,8 @@ func (s *EtherWalletSuite) TestInsuficientFundsWithdraw() {
 
 func (s *EtherWalletSuite) TestValidWithdraw() {
 	s.wallet.setBalance(s.src, big.NewInt(100))
-	voucher, err := s.wallet.withdraw(s.src, big.NewInt(100))
+	err := s.wallet.withdraw(s.src, big.NewInt(100))
 	s.Nil(err)
-	s.NotNil(voucher)
 	balance := s.wallet.balanceOf(s.src)
 	s.Equal(big.NewInt(0), balance)
 }

@@ -61,12 +61,8 @@ func (s *HoneypotSuite) TestItWithdrawsEther() {
 	s.Equal(appAddress, result.Vouchers[0].Destination)
 
 	// check voucher
-	expectedVoucher := make([]byte, 0, 4+32+32)
-	expectedVoucher = append(expectedVoucher, 0x52, 0x2f, 0x68, 0x15)
-	expectedVoucher = append(expectedVoucher, make([]byte, 12)...) // padding
-	expectedVoucher = append(expectedVoucher, owner[:]...)
-	expectedVoucher = append(expectedVoucher, big.NewInt(100).FillBytes(make([]byte, 32))...)
-	s.Equal(expectedVoucher, result.Vouchers[0].Payload)
+	expectedVoucherValue := big.NewInt(100)
+	s.Equal(expectedVoucherValue, result.Vouchers[0].Value)
 }
 
 func (s *HoneypotSuite) TestItFailsToWithdrawWithoutFunds() {
