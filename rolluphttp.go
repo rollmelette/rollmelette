@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math/big"
 	"net/http"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -64,12 +65,14 @@ func (r *rollupHttp) finishAndGetNext(ctx context.Context, status finishStatus) 
 	}
 }
 
-func (r *rollupHttp) sendVoucher(ctx context.Context, destination common.Address, payload []byte) (int, error) {
+func (r *rollupHttp) sendVoucher(ctx context.Context, destination common.Address, value *big.Int, payload []byte) (int, error) {
 	request := struct {
-		Destination string `json:"destination"`
-		Payload     string `json:"payload"`
+		Destination string   `json:"destination"`
+		Value       *big.Int `json:"value"`
+		Payload     string   `json:"payload"`
 	}{
 		Destination: hexutil.Encode(destination[:]),
+		Value:       value,
 		Payload:     hexutil.Encode(payload),
 	}
 	resp, err := r.sendPost(ctx, "voucher", request)
@@ -154,11 +157,13 @@ func parseAdvanceInput(data json.RawMessage) (any, error) {
 	var advanceRequest struct {
 		Payload  string `json:"payload"`
 		Metadata struct {
-			MsgSender   string `json:"msg_sender"`
-			EpochIndex  int    `json:"epoch_index"`
-			InputIndex  int    `json:"input_index"`
-			BlockNumber int64  `json:"block_number"`
-			Timestamp   int64  `json:"timestamp"`
+			ChainId        int64  `json:"chain_id"`
+			AppContract    string `json:"app_contract"`
+			MsgSender      string `json:"msg_sender"`
+			InputIndex     int    `json:"input_index"`
+			BlockNumber    int64  `json:"block_number"`
+			BlockTimestamp int64  `json:"block_timestamp"`
+			PrevRandao     string `json:"prev_randao"`
 		}
 	}
 	if err := json.Unmarshal(data, &advanceRequest); err != nil {
@@ -168,15 +173,26 @@ func parseAdvanceInput(data json.RawMessage) (any, error) {
 	if err != nil {
 		return nil, fmt.Errorf("rollup: decode advance payload: %w", err)
 	}
+	appContract, err := hexutil.Decode(advanceRequest.Metadata.AppContract)
+	if err != nil {
+		return nil, fmt.Errorf("rollup: decode advance metadata app_contract: %w", err)
+	}
 	sender, err := hexutil.Decode(advanceRequest.Metadata.MsgSender)
 	if err != nil {
 		return nil, fmt.Errorf("rollup: decode advance metadata sender: %w", err)
 	}
+	prevRandao, err := hexutil.Decode(advanceRequest.Metadata.PrevRandao)
+	if err != nil {
+		return nil, fmt.Errorf("rollup: decode advance metadata prev_randao: %w", err)
+	}
 	metadata := Metadata{
+		ChainId:        advanceRequest.Metadata.ChainId,
+		AppContract:    common.Address(appContract),
 		InputIndex:     advanceRequest.Metadata.InputIndex,
 		MsgSender:      common.Address(sender),
 		BlockNumber:    advanceRequest.Metadata.BlockNumber,
-		BlockTimestamp: advanceRequest.Metadata.Timestamp,
+		BlockTimestamp: advanceRequest.Metadata.BlockTimestamp,
+		PrevRandao:     common.Bytes2Hex(prevRandao),
 	}
 	input := &advanceInput{
 		Metadata: metadata,

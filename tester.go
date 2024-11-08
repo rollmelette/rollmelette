@@ -57,11 +57,6 @@ func (t *Tester) Advance(msgSender common.Address, payload []byte) TestAdvanceRe
 	return t.sendAdvance(msgSender, payload)
 }
 
-// RelayAppAddress simulates an advance input from the app address relay.
-func (t *Tester) RelayAppAddress(appAddress common.Address) TestAdvanceResult {
-	return t.sendAdvance(t.env.AppAddressRelay, appAddress[:])
-}
-
 // DepositEther simulates an advance input from the Ether portal.
 func (t *Tester) DepositEther(
 	msgSender common.Address,
@@ -118,10 +113,13 @@ func (t *Tester) Inspect(payload []byte) TestInspectResult {
 func (t *Tester) sendAdvance(msgSender common.Address, payload []byte) TestAdvanceResult {
 	t.rollup.reset()
 	metadata := Metadata{
+		ChainId:        1,
+		AppContract:    common.HexToAddress("0xab7528bb862fb57e8a2bcd567a2e929a0be56a5e"),
 		InputIndex:     t.inputIndex,
 		MsgSender:      msgSender,
 		BlockNumber:    int64(t.inputIndex),
 		BlockTimestamp: time.Now().Unix(),
+		PrevRandao:     "0x0000000000000000000000000000000000000000000000000000000000000001",
 	}
 	input := advanceInput{
 		Metadata: metadata,

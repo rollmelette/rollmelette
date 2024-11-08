@@ -12,10 +12,9 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-var payload = common.Hex2Bytes("deadbeef")
 var owner = common.HexToAddress("0xfafafafafafafafafafafafafafafafafafafafa")
 var hacker = common.HexToAddress("0xfefefefefefefefefefefefefefefefefefefefe")
-var appAddress = common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada")
+var appAddress = common.HexToAddress("0xab7528bb862fb57e8a2bcd567a2e929a0be56a5e")
 
 func TestHoneypotSuite(t *testing.T) {
 	suite.Run(t, new(HoneypotSuite))
@@ -53,10 +52,6 @@ func (s *HoneypotSuite) TestItWithdrawsEther() {
 	s.Len(result.Reports, 1)
 	s.checkBalance(100, result.Reports[0].Payload)
 
-	// send app address
-	result = s.tester.RelayAppAddress(appAddress)
-	s.Nil(result.Err)
-
 	// withdraw
 	result = s.tester.Advance(owner, nil)
 	s.Nil(result.Err)
@@ -79,30 +74,12 @@ func (s *HoneypotSuite) TestItFailsToWithdrawWithoutFunds() {
 	s.ErrorContains(result.Err, "nothing to withdraw")
 }
 
-func (s *HoneypotSuite) TestItFailsToWithdrawWithoutAppAddress() {
-	// deposit
-	result := s.tester.DepositEther(owner, big.NewInt(100), nil)
-	s.Nil(result.Err)
-	s.Len(result.Reports, 1)
-	s.checkBalance(100, result.Reports[0].Payload)
-
-	// withdraw
-	result = s.tester.Advance(owner, nil)
-	s.ErrorContains(result.Err, "can't withdraw ether without application address")
-	s.Len(result.Reports, 1)
-	s.checkBalance(100, result.Reports[0].Payload)
-}
-
 func (s *HoneypotSuite) TestItFailsToWithdrawFromHacker() {
 	// deposit
 	result := s.tester.DepositEther(owner, big.NewInt(100), nil)
 	s.Nil(result.Err)
 	s.Len(result.Reports, 1)
 	s.checkBalance(100, result.Reports[0].Payload)
-
-	// send app address
-	result = s.tester.RelayAppAddress(appAddress)
-	s.Nil(result.Err)
 
 	// withdraw
 	result = s.tester.Advance(hacker, nil)

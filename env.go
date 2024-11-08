@@ -18,13 +18,12 @@ import (
 // Instead, it is create by the running and testing functions.
 type env struct {
 	AddressBook
-	ctx           context.Context
-	rollup        rollupEnv
-	app           Application
-	appAddress    common.Address
-	appAddressSet bool
-	etherWallet   *etherWallet
-	erc20Wallet   *erc20Wallet
+	ctx         context.Context
+	rollup      rollupEnv
+	app         Application
+	appAddress  common.Address
+	etherWallet *etherWallet
+	erc20Wallet *erc20Wallet
 }
 
 func newEnv(ctx context.Context, addressBook AddressBook, rollup rollupEnv, app Application) *env {
@@ -70,19 +69,21 @@ func (e *env) handle(input any) (err error) {
 func (e *env) handleAdvance(input *advanceInput) error {
 	slog.Debug("received advance",
 		"payload", hexutil.Encode(input.Payload),
+		"chainId", input.Metadata.ChainId,
+		"appContract", input.Metadata.AppContract,
 		"inputIndex", input.Metadata.InputIndex,
 		"msgSender", input.Metadata.MsgSender,
 		"blockNumber", input.Metadata.BlockNumber,
 		"blockTimestamp", input.Metadata.BlockTimestamp,
+		"prevRandao", input.Metadata.PrevRandao,
 	)
 	var (
 		err     error
 		deposit Deposit
 		payload []byte = input.Payload
 	)
+	e.appAddress = (common.Address)(input.Metadata.AppContract)
 	switch input.Metadata.MsgSender {
-	case e.AppAddressRelay:
-		return e.handleAppAddressRelay(payload)
 	case e.EtherPortal:
 		deposit, payload, err = e.etherWallet.deposit(payload)
 	case e.ERC20Portal:
@@ -95,16 +96,6 @@ func (e *env) handleAdvance(input *advanceInput) error {
 		slog.Debug("received deposit", "deposit", deposit)
 	}
 	return e.app.Advance(e, input.Metadata, deposit, payload)
-}
-
-func (e *env) handleAppAddressRelay(payload []byte) error {
-	if len(payload) != common.AddressLength {
-		return fmt.Errorf("invalid input from app address relay: %x", payload)
-	}
-	e.appAddress = (common.Address)(payload)
-	e.appAddressSet = true
-	slog.Debug("got application address from relay", "address", e.appAddress)
-	return nil
 }
 
 func (e *env) handleInspect(payload []byte) error {
@@ -122,8 +113,8 @@ func (e *env) Report(payload []byte) {
 	}
 }
 
-func (e *env) AppAddress() (common.Address, bool) {
-	return e.appAddress, e.appAddressSet
+func (e *env) AppAddress() (common.Address) {
+	return e.appAddress
 }
 
 func (e *env) EtherAddresses() []common.Address {
@@ -148,9 +139,9 @@ func (e *env) ERC20BalanceOf(token common.Address, address common.Address) *big.
 
 // Env interface ///////////////////////////////////////////////////////////////////////////////////
 
-func (e *env) Voucher(destination common.Address, payload []byte) int {
-	slog.Debug("sending voucher", "destination", destination, "payload", hexutil.Encode(payload))
-	index, err := e.rollup.sendVoucher(e.ctx, destination, payload)
+func (e *env) Voucher(destination common.Address, value *big.Int, payload []byte) int {
+	slog.Debug("sending voucher", "destination", destination, "value", value, "payload", hexutil.Encode(payload))
+	index, err := e.rollup.sendVoucher(e.ctx, destination, value, payload)
 	if err != nil {
 		panic(err)
 	}
@@ -171,14 +162,11 @@ func (e *env) EtherTransfer(src common.Address, dst common.Address, value *big.I
 }
 
 func (e *env) EtherWithdraw(address common.Address, value *big.Int) (int, error) {
-	if !e.appAddressSet {
-		return 0, fmt.Errorf("can't withdraw ether without application address")
-	}
 	payload, err := e.etherWallet.withdraw(address, value)
 	if err != nil {
 		return 0, err
 	}
-	return e.Voucher(e.appAddress, payload), nil
+	return e.Voucher(e.appAddress, value, payload), nil
 }
 
 func (e *env) ERC20Transfer(
@@ -199,5 +187,5 @@ func (e *env) ERC20Withdraw(
 	if err != nil {
 		return 0, err
 	}
-	return e.Voucher(token, payload), nil
+	return e.Voucher(token, value, payload), nil
 }

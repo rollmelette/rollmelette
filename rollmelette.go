@@ -55,7 +55,7 @@ type EnvInspector interface {
 
 	// AppAddress returns the application address sent by the address relay contract.
 	// If the contract didn't send the address yet, the function returns false.
-	AppAddress() (common.Address, bool)
+	AppAddress() (common.Address)
 
 	// EtherAddresses returns the list of addresses that have Ether.
 	EtherAddresses() []common.Address
@@ -78,7 +78,7 @@ type Env interface {
 	EnvInspector
 
 	// Voucher sends a voucher and returns its index.
-	Voucher(destination common.Address, payload []byte) int
+	Voucher(destination common.Address, value *big.Int, payload []byte) int
 
 	// Notice sends a notice and returns its index.
 	Notice(payload []byte) int

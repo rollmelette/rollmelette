@@ -5,12 +5,18 @@ package rollmelette
 
 import (
 	"context"
+	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
 )
 
 // Metadata of the rollup advance input.
 type Metadata struct {
+	// ChainId is the chain id of the base layer.
+	ChainId int64
+
+	// AppContract is the address of the application contract.
+	AppContract common.Address
 
 	// InputIndex is the advance input index.
 	InputIndex int
@@ -23,6 +29,9 @@ type Metadata struct {
 
 	// BlockNumber is the timestamp of the block when the input was added to the L1 chain.
 	BlockTimestamp int64
+
+	// PrevRandao is the previous randao value of the block when the input was added to the L1 chain.
+	PrevRandao string
 }
 
 // finishStatus is the status when finishing a rollup input.
@@ -48,7 +57,7 @@ type inspectInput struct {
 type rollupEnv interface {
 
 	// sendVoucher sends a voucher to the Rollup API and returns its index.
-	sendVoucher(ctx context.Context, destination common.Address, payload []byte) (int, error)
+	sendVoucher(ctx context.Context, destination common.Address, value *big.Int, payload []byte) (int, error)
 
 	// sendNotice sends a notice to the Rollup API and returns its index.
 	sendNotice(ctx context.Context, payload []byte) (int, error)

@@ -4,6 +4,8 @@
 package echoapp
 
 import (
+	"math/big"
+
 	"github.com/rollmelette/rollmelette"
 )
 
@@ -17,7 +19,7 @@ func (a *EchoApplication) Advance(
 	deposit rollmelette.Deposit,
 	payload []byte,
 ) error {
-	env.Voucher(metadata.MsgSender, payload)
+	env.Voucher(metadata.MsgSender, big.NewInt(0), payload)
 	env.Notice(payload)
 	env.Report(payload)
 	return nil
