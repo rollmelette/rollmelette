@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"math/big"
 	"net/http"
 
@@ -66,15 +67,17 @@ func (r *rollupHttp) finishAndGetNext(ctx context.Context, status finishStatus) 
 }
 
 func (r *rollupHttp) sendVoucher(ctx context.Context, destination common.Address, value *big.Int, payload []byte) (int, error) {
+	paddedBytes := common.LeftPadBytes(value.Bytes(), 32) // nolint
 	request := struct {
 		Destination string `json:"destination"`
 		Value       string `json:"value"`
 		Payload     string `json:"payload"`
 	}{
 		Destination: hexutil.Encode(destination[:]),
-		Value:       "0x0000000000000000000000000000000000000000000000000000000000000001",
+		Value:       "0x" + common.Bytes2Hex(paddedBytes),
 		Payload:     hexutil.Encode(payload),
 	}
+	slog.Debug("SendVoucher", "request", request)
 	resp, err := r.sendPost(ctx, "voucher", request)
 	if err != nil {
 		return 0, err
