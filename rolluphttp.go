@@ -67,12 +67,12 @@ func (r *rollupHttp) finishAndGetNext(ctx context.Context, status finishStatus) 
 
 func (r *rollupHttp) sendVoucher(ctx context.Context, destination common.Address, value *big.Int, payload []byte) (int, error) {
 	request := struct {
-		Destination string   `json:"destination"`
-		Value       *big.Int `json:"value"`
-		Payload     string   `json:"payload"`
+		Destination string `json:"destination"`
+		Value       string `json:"value"`
+		Payload     string `json:"payload"`
 	}{
 		Destination: hexutil.Encode(destination[:]),
-		Value:       value,
+		Value:       "0x0000000000000000000000000000000000000000000000000000000000000001",
 		Payload:     hexutil.Encode(payload),
 	}
 	resp, err := r.sendPost(ctx, "voucher", request)

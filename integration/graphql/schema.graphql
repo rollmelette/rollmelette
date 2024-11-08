@@ -1,9 +1,7 @@
 "Data that can be used as proof to validate notices and execute vouchers on the base layer blockchain"
 type Proof {
-  "Validity proof for an output"
-  validity: OutputValidityProof!
-  "Data that allows the validity proof to be contextualized within submitted claims, given as a payload in Ethereum hex binary format, starting with '0x'"
-  context: String!
+  outputIndex: BigInt!
+  outputHashesSiblings: [String]!
 }
 
 enum CompletionStatus {
@@ -19,6 +17,8 @@ enum CompletionStatus {
 
 "Request submitted to the application to advance its state"
 type Input {
+  "id of the input"
+  id: String!
   "Input index starting from genesis"
   index: Int!
   "Status of the input"
@@ -26,43 +26,33 @@ type Input {
   "Address responsible for submitting the input"
   msgSender: String!
   "Timestamp associated with the input submission, as defined by the base layer's block in which it was recorded"
-  timestamp: BigInt!
+  timestamp: BigInt! @deprecated(reason: "Use `blockTimestamp` instead")
   "Number of the base layer block in which the input was recorded"
   blockNumber: BigInt!
   "Input payload in Ethereum hex binary format, starting with '0x'"
   payload: String!
-  "Get a voucher from this particular input given the voucher's index"
-  voucher(index: Int!): Voucher!
-  "Get a notice from this particular input given the notice's index"
-  notice(index: Int!): Notice!
-  "Get a report from this particular input given the report's index"
-  report(index: Int!): Report!
+  # "Get a voucher from this particular input given the voucher's index"
+  # voucher(index: Int!): Voucher!
+  # "Get a notice from this particular input given the notice's index"
+  # notice(index: Int!): Notice!
+  # "Get a report from this particular input given the report's index"
+  # report(index: Int!): Report!
   "Get vouchers from this particular input with support for pagination"
   vouchers(first: Int, last: Int, after: String, before: String): VoucherConnection!
   "Get notices from this particular input with support for pagination"
   notices(first: Int, last: Int, after: String, before: String): NoticeConnection!
   "Get reports from this particular input with support for pagination"
   reports(first: Int, last: Int, after: String, before: String): ReportConnection!
-}
+  "Timestamp associated with the Espresso input submission"
+  espressoTimestamp: String @deprecated(reason: "Will be removed")
+  "Number of the Espresso block in which the input was recorded"
+  espressoBlockNumber: String @deprecated(reason: "Will be removed")
+  "Input index in the Input Box"
+  inputBoxIndex: String
 
-"Validity proof for an output"
-type OutputValidityProof {
-  "Local input index within the context of the related epoch"
-  inputIndexWithinEpoch: Int!
-  "Output index within the context of the input that produced it"
-  outputIndexWithinInput: Int!
-  "Merkle root of all output hashes of the related input, given in Ethereum hex binary format (32 bytes), starting with '0x'"
-  outputHashesRootHash: String!
-  "Merkle root of all voucher hashes of the related epoch, given in Ethereum hex binary format (32 bytes), starting with '0x'"
-  vouchersEpochRootHash: String!
-  "Merkle root of all notice hashes of the related epoch, given in Ethereum hex binary format (32 bytes), starting with '0x'"
-  noticesEpochRootHash: String!
-  "Hash of the machine state claimed for the related epoch, given in Ethereum hex binary format (32 bytes), starting with '0x'"
-  machineStateHash: String!
-  "Proof that this output hash is in the output-hashes merkle tree. This array of siblings is bottom-up ordered (from the leaf to the root). Each hash is given in Ethereum hex binary format (32 bytes), starting with '0x'."
-  outputHashInOutputHashesSiblings: [String!]!
-  "Proof that this output-hashes root hash is in epoch's output merkle tree. This array of siblings is bottom-up ordered (from the leaf to the root). Each hash is given in Ethereum hex binary format (32 bytes), starting with '0x'."
-  outputHashesInEpochSiblings: [String!]!
+  blockTimestamp: BigInt
+
+  prevRandao: String
 }
 
 "Representation of a transaction that can be carried out on the base layer blockchain, such as a transfer of assets"
@@ -77,22 +67,30 @@ type Voucher {
   payload: String!
   "Proof object that allows this voucher to be validated and executed on the base layer blockchain"
   proof: Proof
+
+  value: BigInt
+
+  "Indicates whether the voucher has been executed on the base layer blockchain"
+  executed: Boolean
+
+  "The hash of executed transaction"
+  transactionHash: String
 }
 
 "Top level queries"
 type Query {
   "Get input based on its identifier"
-  input(index: Int!): Input!
+  input(id: String!): Input!
   "Get a voucher based on its index"
-  voucher(voucherIndex: Int!, inputIndex: Int!): Voucher!
+  voucher(outputIndex: Int!): Voucher!
   "Get a notice based on its index"
-  notice(noticeIndex: Int!, inputIndex: Int!): Notice!
+  notice(outputIndex: Int!): Notice!
   "Get a report based on its index"
-  report(reportIndex: Int!, inputIndex: Int!): Report!
+  report(reportIndex: Int!): Report!
   "Get inputs with support for pagination"
   inputs(first: Int, last: Int, after: String, before: String, where: InputFilter): InputConnection!
   "Get vouchers with support for pagination"
-  vouchers(first: Int, last: Int, after: String, before: String): VoucherConnection!
+  vouchers(first: Int, last: Int, after: String, before: String, filter: [ConvenientFilter]): VoucherConnection!
   "Get notices with support for pagination"
   notices(first: Int, last: Int, after: String, before: String): NoticeConnection!
   "Get reports with support for pagination"
@@ -163,6 +161,12 @@ input InputFilter {
   indexLowerThan: Int
   "Filter only inputs with index greater than a given value"
   indexGreaterThan: Int
+
+  "Filter only inputs with the message sender"
+  msgSender: String
+
+  "Filter only inputs from 'inputbox' or 'espresso'"
+  type: String
 }
 
 scalar BigInt
@@ -219,3 +223,53 @@ schema {
   query: Query
 }
 
+input AddressFilterInput {
+  eq: String
+  ne: String
+  in: [String]
+  nin: [String]
+
+  # Logical operators
+  and: [ConvenientFilter]
+  or: [ConvenientFilter]
+}
+
+input BooleanFilterInput {
+  eq: Boolean
+  ne: Boolean
+
+  # Logical operators
+  and: [ConvenientFilter]
+  or: [ConvenientFilter]
+}
+
+input ConvenientFilter {
+  destination: AddressFilterInput
+  executed: BooleanFilterInput
+  # UserData: UserDataFilter
+
+  # Logical operators
+  and: [ConvenientFilter]
+  or: [ConvenientFilter]
+}
+
+# input UserDataFilter {
+#   # The field to apply the comparison operation on
+#   field: String!
+
+#   # Basic comparison operators
+#   eq: String
+#   ne: String
+#   gt: String
+#   gte: String
+#   lt: String
+#   lte: String
+
+#   # Inclusion/exclusion operators
+#   in: [String]
+#   nin: [String]
+
+#   # Logical operators
+#   and: [ConvenientFilter]
+#   or: [ConvenientFilter]
+# }

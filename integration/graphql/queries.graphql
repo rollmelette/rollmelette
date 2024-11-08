@@ -1,6 +1,6 @@
 # Get the input status.
-query getInputStatus($index: Int!) {
-  input(index: $index) {
+query getInputStatus($id: String!) {
+  input(id: $id) {
     status
   }
 }
@@ -13,7 +13,7 @@ query getNodeState {
         index
         status
         msgSender
-        timestamp
+        blockTimestamp
         blockNumber
         payload
         notices {

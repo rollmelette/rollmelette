@@ -23,11 +23,11 @@ const (
 
 // __getInputStatusInput is used internally by genqlient
 type __getInputStatusInput struct {
-	Index int `json:"index"`
+	Id string `json:"id"`
 }
 
-// GetIndex returns __getInputStatusInput.Index, and is useful for accessing the field via an interface.
-func (v *__getInputStatusInput) GetIndex() int { return v.Index }
+// GetId returns __getInputStatusInput.Id, and is useful for accessing the field via an interface.
+func (v *__getInputStatusInput) GetId() string { return v.Id }
 
 // getInputStatusInput includes the requested fields of the GraphQL type Input.
 // The GraphQL type's documentation follows.
@@ -88,9 +88,8 @@ type getNodeStateInputsInputConnectionEdgesInputEdgeNodeInput struct {
 	// Status of the input
 	Status CompletionStatus `json:"status"`
 	// Address responsible for submitting the input
-	MsgSender string `json:"msgSender"`
-	// Timestamp associated with the input submission, as defined by the base layer's block in which it was recorded
-	Timestamp string `json:"timestamp"`
+	MsgSender      string `json:"msgSender"`
+	BlockTimestamp string `json:"blockTimestamp"`
 	// Number of the base layer block in which the input was recorded
 	BlockNumber string `json:"blockNumber"`
 	// Input payload in Ethereum hex binary format, starting with '0x'
@@ -116,9 +115,9 @@ func (v *getNodeStateInputsInputConnectionEdgesInputEdgeNodeInput) GetMsgSender(
 	return v.MsgSender
 }
 
-// GetTimestamp returns getNodeStateInputsInputConnectionEdgesInputEdgeNodeInput.Timestamp, and is useful for accessing the field via an interface.
-func (v *getNodeStateInputsInputConnectionEdgesInputEdgeNodeInput) GetTimestamp() string {
-	return v.Timestamp
+// GetBlockTimestamp returns getNodeStateInputsInputConnectionEdgesInputEdgeNodeInput.BlockTimestamp, and is useful for accessing the field via an interface.
+func (v *getNodeStateInputsInputConnectionEdgesInputEdgeNodeInput) GetBlockTimestamp() string {
+	return v.BlockTimestamp
 }
 
 // GetBlockNumber returns getNodeStateInputsInputConnectionEdgesInputEdgeNodeInput.BlockNumber, and is useful for accessing the field via an interface.
@@ -311,8 +310,8 @@ func (v *getNodeStateResponse) GetInputs() getNodeStateInputsInputConnection { r
 
 // The query or mutation executed by getInputStatus.
 const getInputStatus_Operation = `
-query getInputStatus ($index: Int!) {
-	input(index: $index) {
+query getInputStatus ($id: String!) {
+	input(id: $id) {
 		status
 	}
 }
@@ -322,13 +321,13 @@ query getInputStatus ($index: Int!) {
 func getInputStatus(
 	ctx context.Context,
 	client graphql.Client,
-	index int,
+	id string,
 ) (*getInputStatusResponse, error) {
 	req := &graphql.Request{
 		OpName: "getInputStatus",
 		Query:  getInputStatus_Operation,
 		Variables: &__getInputStatusInput{
-			Index: index,
+			Id: id,
 		},
 	}
 	var err error
@@ -354,7 +353,7 @@ query getNodeState {
 				index
 				status
 				msgSender
-				timestamp
+				blockTimestamp
 				blockNumber
 				payload
 				notices {

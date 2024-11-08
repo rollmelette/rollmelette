@@ -6,7 +6,6 @@ package integration
 import (
 	"context"
 	"fmt"
-	"os"
 	"os/exec"
 	"strings"
 	"testing"
@@ -40,17 +39,18 @@ func (s *NonodoSuite) SetupTest() {
 	s.ctx, s.cancel = context.WithTimeout(context.Background(), TestTimeout)
 	s.group, s.ctx = errgroup.WithContext(s.ctx)
 
-	// start nonodo
-	nonodo := exec.CommandContext(s.ctx, "brunodo")
-	out := NewNotifyWriter(os.Stdout, "brunodo: ready")
-	nonodo.Stdout = out
-	s.group.Go(nonodo.Run)
-	s.nonodo = nonodo
-	select {
-	case <-out.ready:
-	case <-s.ctx.Done():
-		s.T().Error(s.ctx.Err())
-	}
+	// // start nonodo
+	// nonodo := exec.CommandContext(s.ctx, "brunodo", "-d")
+	// out := NewNotifyWriter(os.Stdout, "nonodo: ready")
+	// nonodo.Stdout = out
+	// s.group.Go(nonodo.Run)
+	// s.nonodo = nonodo
+	// select {
+	// case <-out.ready:
+	// case <-s.ctx.Done():
+	// 	slog.Debug("Error", "err", s.ctx.Err())
+	// 	s.T().Error(s.ctx.Err())
+	// }
 
 	// start test app
 	s.group.Go(func() error {
@@ -63,6 +63,8 @@ func (s *NonodoSuite) SetupTest() {
 func (s *NonodoSuite) TearDownTest() {
 	s.cancel()
 	err := exec.Command("pkill", "brunodo").Run()
+	s.NoError(err)
+	err = exec.Command("pkill", "nonodo").Run()
 	s.NoError(err)
 }
 
@@ -99,7 +101,7 @@ func waitForInput(ctx context.Context, client graphql.Client, _index int) error 
 	ticker := time.NewTicker(10 * time.Millisecond)
 	defer ticker.Stop()
 	for {
-		result, err := getInputStatus(ctx, client, 0)
+		result, err := getInputStatus(ctx, client, "0")
 		if err != nil && !strings.Contains(err.Error(), "input not found") {
 			return fmt.Errorf("failed to get input status: %w", err)
 		}
