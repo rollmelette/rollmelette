@@ -17,6 +17,12 @@ type TestVoucher struct {
 	Payload     []byte
 }
 
+// TestDelegateCallVoucher represents a delegate call voucher received by the mock.
+type TestDelegateCallVoucher struct {
+	Destination common.Address
+	Payload     []byte
+}
+
 // TestNotice represents a notice received by the mock.
 type TestNotice struct {
 	Payload []byte
@@ -29,9 +35,10 @@ type TestReport struct {
 
 // rollupHttp implements the Rollup API by calling the Rollup HTTP server.
 type rollupMock struct {
-	Vouchers []TestVoucher
-	Notices  []TestNotice
-	Reports  []TestReport
+	Vouchers             []TestVoucher
+	DelegateCallVouchers []TestDelegateCallVoucher
+	Notices              []TestNotice
+	Reports              []TestReport
 }
 
 // rollup interface ////////////////////////////////////////////////////////////////////////////////
@@ -48,6 +55,14 @@ func (m *rollupMock) sendVoucher(
 		Payload:     payload,
 	})
 	return len(m.Vouchers), nil
+}
+
+func (m *rollupMock) sendDelegateCallVoucher(ctx context.Context, destination common.Address, payload []byte) (int, error) {
+	m.DelegateCallVouchers = append(m.DelegateCallVouchers, TestDelegateCallVoucher{
+		Destination: destination,
+		Payload:     payload,
+	})
+	return len(m.DelegateCallVouchers), nil
 }
 
 func (m *rollupMock) sendNotice(ctx context.Context, payload []byte) (int, error) {

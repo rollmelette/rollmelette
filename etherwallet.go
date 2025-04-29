@@ -5,10 +5,11 @@ package rollmelette
 
 import (
 	"fmt"
-	"github.com/ethereum/go-ethereum/common"
 	"log/slog"
 	"math/big"
 	"slices"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 // EtherDeposit ////////////////////////////////////////////////////////////////////////////////////

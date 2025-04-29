@@ -1,14 +1,24 @@
+version: "2"
 linters:
   enable:
-    - errcheck
     - exhaustive
     - goconst
     - godox
-    - gofmt
-    - gomnd
-    - gosimple
-    - govet
-    - ineffassign
     - misspell
-    - staticcheck
-    - unused
+    - mnd
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - examples
+formatters:
+  enable:
+    - gofmt
+  exclusions:
+    generated: lax
+    paths:
+      - examples
