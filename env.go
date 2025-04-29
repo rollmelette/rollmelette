@@ -80,7 +80,7 @@ func (e *env) handleAdvance(input *advanceInput) error {
 	var (
 		err     error
 		deposit Deposit
-		payload []byte = input.Payload
+		payload = input.Payload
 	)
 	e.appAddress = (common.Address)(input.Metadata.AppContract)
 	switch input.Metadata.MsgSender {
@@ -142,6 +142,15 @@ func (e *env) ERC20BalanceOf(token common.Address, address common.Address) *big.
 func (e *env) Voucher(destination common.Address, value *big.Int, payload []byte) int {
 	slog.Debug("sending voucher", "destination", destination, "value", value, "payload", hexutil.Encode(payload))
 	index, err := e.rollup.sendVoucher(e.ctx, destination, value, payload)
+	if err != nil {
+		panic(err)
+	}
+	return index
+}
+
+func (e *env) DelegateCallVoucher(destination common.Address, payload []byte) int {
+	slog.Debug("sending delegate call voucher", "destination", destination, "payload", hexutil.Encode(payload))
+	index, err := e.rollup.sendDelegateCallVoucher(e.ctx, destination, payload)
 	if err != nil {
 		panic(err)
 	}

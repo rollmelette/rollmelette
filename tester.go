@@ -13,9 +13,10 @@ import (
 
 // TestAdvanceResult is the result of the test advance function.
 type TestAdvanceResult struct {
-	Vouchers []TestVoucher
-	Notices  []TestNotice
-	Reports  []TestReport
+	Vouchers             []TestVoucher
+	DelegateCallVouchers []TestDelegateCallVoucher
+	Notices              []TestNotice
+	Reports              []TestReport
 	Metadata
 	Err error
 }
@@ -128,10 +129,11 @@ func (t *Tester) sendAdvance(msgSender common.Address, payload []byte) TestAdvan
 	err := t.env.handle(&input)
 	t.inputIndex++
 	return TestAdvanceResult{
-		Vouchers: t.rollup.Vouchers,
-		Notices:  t.rollup.Notices,
-		Reports:  t.rollup.Reports,
-		Metadata: metadata,
-		Err:      err,
+		Vouchers:             t.rollup.Vouchers,
+		DelegateCallVouchers: t.rollup.DelegateCallVouchers,
+		Notices:              t.rollup.Notices,
+		Reports:              t.rollup.Reports,
+		Metadata:             metadata,
+		Err:                  err,
 	}
 }

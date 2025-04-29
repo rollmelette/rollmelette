@@ -89,6 +89,25 @@ func (r *rollupHttp) sendVoucher(ctx context.Context, destination common.Address
 	return parseOutputIndex(resp.Body)
 }
 
+func (r *rollupHttp) sendDelegateCallVoucher(ctx context.Context, destination common.Address, payload []byte) (int, error) {
+	request := struct {
+		Destination string `json:"destination"`
+		Payload     string `json:"payload"`
+	}{
+		Destination: hexutil.Encode(destination[:]),
+		Payload:     hexutil.Encode(payload),
+	}
+	resp, err := r.sendPost(ctx, "delegate-call-voucher", request)
+	if err != nil {
+		return 0, err
+	}
+	defer resp.Body.Close()
+	if err = checkStatusOk(resp); err != nil {
+		return 0, err
+	}
+	return parseOutputIndex(resp.Body)
+}
+
 func (r *rollupHttp) sendNotice(ctx context.Context, payload []byte) (int, error) {
 	request := struct {
 		Payload string `json:"payload"`
@@ -222,7 +241,7 @@ func parseInspectInput(data json.RawMessage) (any, error) {
 }
 
 func checkStatusOk(resp *http.Response) error {
-	if !(resp.StatusCode >= http.StatusOK && resp.StatusCode < http.StatusMultipleChoices) {
+	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return fmt.Errorf("http: read body: %w", err)

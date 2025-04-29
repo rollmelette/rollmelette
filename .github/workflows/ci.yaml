@@ -12,7 +12,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.21'
+        go-version: '1.21.1'
 
     - name: Install Foundry
       uses: foundry-rs/foundry-toolchain@v1
@@ -23,9 +23,9 @@ jobs:
         npm i -g brunodo
 
     - name: Lint
-      uses: golangci/golangci-lint-action@v3
+      uses: golangci/golangci-lint-action@v7
       with:
-          version: latest
+        version: v2.1.1
 
     - name: Check generate
       run: make check-gen

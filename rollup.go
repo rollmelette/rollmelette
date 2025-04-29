@@ -59,10 +59,13 @@ type rollupEnv interface {
 	// sendVoucher sends a voucher to the Rollup API and returns its index.
 	sendVoucher(ctx context.Context, destination common.Address, value *big.Int, payload []byte) (int, error)
 
+	// sendDelegateCallVoucher sends a delegate call voucher to the Rollup API and returns its index.
+	sendDelegateCallVoucher(ctx context.Context, destination common.Address, payload []byte) (int, error)
+
 	// sendNotice sends a notice to the Rollup API and returns its index.
 	sendNotice(ctx context.Context, payload []byte) (int, error)
 
-	// sendNotice sends a report to the Rollup API.
+	// sendReport sends a report to the Rollup API.
 	sendReport(ctx context.Context, payload []byte) error
 }
 
