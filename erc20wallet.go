@@ -123,7 +123,7 @@ func (w *erc20Wallet) withdraw(
 }
 
 func (w *erc20Wallet) deposit(payload []byte) (Deposit, []byte, error) {
-	if len(payload) < 1+20+20+32 {
+	if len(payload) < 20+20+32 {
 		return nil, nil, fmt.Errorf("invalid erc20 deposit size; got %v", len(payload))
 	}
 
