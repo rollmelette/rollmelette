@@ -161,7 +161,7 @@ func (s *ERC20WalletSuite) TestInsuficientFundsWithdraw() {
 }
 
 func (s *ERC20WalletSuite) TestValidDeposit() {
-	payload := common.Hex2Bytes("01babababababababababababababababababababafafafafafafafafafafafafafafafafafafafafa0000000000000000000000000000000000000000000000000000000000000064deadbeef")
+	payload := common.Hex2Bytes("babababababababababababababababababababafafafafafafafafafafafafafafafafafafafafa0000000000000000000000000000000000000000000000000000000000000064deadbeef")
 	deposit, input, err := s.wallet.deposit(payload)
 	s.Nil(err)
 
@@ -181,7 +181,7 @@ func (s *ERC20WalletSuite) TestValidDeposit() {
 }
 
 func (s *ERC20WalletSuite) TestValidDepositWithEmptyInput() {
-	payload := common.Hex2Bytes("01babababababababababababababababababababafafafafafafafafafafafafafafafafafafafafa0000000000000000000000000000000000000000000000000000000000000064")
+	payload := common.Hex2Bytes("babababababababababababababababababababafafafafafafafafafafafafafafafafafafafafa0000000000000000000000000000000000000000000000000000000000000064")
 	deposit, input, err := s.wallet.deposit(payload)
 	s.Nil(err)
 	s.NotNil(deposit)
@@ -190,12 +190,12 @@ func (s *ERC20WalletSuite) TestValidDepositWithEmptyInput() {
 
 func (s *ERC20WalletSuite) TestOverflowDeposit() {
 	// deposit int max
-	payload := common.Hex2Bytes("01babababababababababababababababababababafafafafafafafafafafafafafafafafafafafafaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+	payload := common.Hex2Bytes("babababababababababababababababababababafafafafafafafafafafafafafafafafafafafafaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
 	_, _, err := s.wallet.deposit(payload)
 	s.Nil(err)
 
 	// deposit more ether
-	payload = common.Hex2Bytes("01babababababababababababababababababababafafafafafafafafafafafafafafafafafafafafa0000000000000000000000000000000000000000000000000000000000001000")
+	payload = common.Hex2Bytes("babababababababababababababababababababafafafafafafafafafafafafafafafafafafafafa0000000000000000000000000000000000000000000000000000000000001000")
 	_, _, err = s.wallet.deposit(payload)
 	s.Nil(err)
 
@@ -208,10 +208,4 @@ func (s *ERC20WalletSuite) TestMalformedDeposit() {
 	payload := common.Hex2Bytes("fafafa")
 	_, _, err := s.wallet.deposit(payload)
 	s.ErrorContains(err, "invalid erc20 deposit size; got 3")
-}
-
-func (s *ERC20WalletSuite) TestFailedDeposit() {
-	payload := common.Hex2Bytes("00babababababababababababababababababababafafafafafafafafafafafafafafafafafafafafa0000000000000000000000000000000000000000000000000000000000000064")
-	_, _, err := s.wallet.deposit(payload)
-	s.ErrorContains(err, "received failed erc20 transfer")
 }
