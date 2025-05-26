@@ -80,6 +80,9 @@ type Env interface {
 	// Voucher sends a voucher and returns its index.
 	Voucher(destination common.Address, value *big.Int, payload []byte) int
 
+	// DelegateCallVoucher delegates a voucher to a new destination.
+	DelegateCallVoucher(destination common.Address, payload []byte) int
+
 	// Notice sends a notice and returns its index.
 	Notice(payload []byte) int
 
