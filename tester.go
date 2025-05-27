@@ -88,8 +88,7 @@ func (t *Tester) DepositERC20(
 	} else if amount.Cmp(big.NewInt(0)) < 0 {
 		panic("negative value")
 	}
-	portalPayload := make([]byte, 0, 1+common.AddressLength+2*common.HashLength+len(payload))
-	portalPayload = append(portalPayload, 1)
+	portalPayload := make([]byte, 0, common.AddressLength+2*common.HashLength+len(payload))
 	portalPayload = append(portalPayload, token[:]...)
 	portalPayload = append(portalPayload, msgSender[:]...)
 	portalPayload = append(portalPayload, amount.FillBytes(make([]byte, common.HashLength))...)
