@@ -198,3 +198,11 @@ func (e *env) ERC20Withdraw(
 	}
 	return e.Voucher(token, big.NewInt(0), payload), nil
 }
+
+func (e *env) SetEtherBalance(address common.Address, value *big.Int) {
+	e.etherWallet.setBalance(address, value)
+}
+
+func (e *env) SetERC20Balance(token common.Address, address common.Address, value *big.Int) {
+	e.erc20Wallet.setBalance(token, address, value)
+}
