@@ -105,6 +105,12 @@ type Env interface {
 	// from the ERC20 contract, and returns the voucher index.
 	// It returns an error if the address doesn't have enough funds.
 	ERC20Withdraw(token common.Address, address common.Address, value *big.Int) (int, error)
+
+	// SetBalance sets the balance of the given address.
+	SetEtherBalance(address common.Address, value *big.Int)
+
+	// SetERC20Balance sets the balance of the given address for the given token.
+	SetERC20Balance(token common.Address, address common.Address, value *big.Int)
 }
 
 // init configures the slog package with the tint handler.
