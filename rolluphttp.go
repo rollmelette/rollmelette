@@ -182,7 +182,7 @@ func parseAdvanceInput(data json.RawMessage) (any, error) {
 			ChainId        int64  `json:"chain_id"`
 			AppContract    string `json:"app_contract"`
 			MsgSender      string `json:"msg_sender"`
-			InputIndex     int    `json:"input_index"`
+			Index          int    `json:"index"`
 			BlockNumber    int64  `json:"block_number"`
 			BlockTimestamp int64  `json:"block_timestamp"`
 			PrevRandao     string `json:"prev_randao"`
@@ -210,11 +210,11 @@ func parseAdvanceInput(data json.RawMessage) (any, error) {
 	metadata := Metadata{
 		ChainId:        advanceRequest.Metadata.ChainId,
 		AppContract:    common.Address(appContract),
-		InputIndex:     advanceRequest.Metadata.InputIndex,
 		MsgSender:      common.Address(sender),
 		BlockNumber:    advanceRequest.Metadata.BlockNumber,
 		BlockTimestamp: advanceRequest.Metadata.BlockTimestamp,
 		PrevRandao:     common.Bytes2Hex(prevRandao),
+		Index:          advanceRequest.Metadata.Index,
 	}
 	input := &advanceInput{
 		Metadata: metadata,

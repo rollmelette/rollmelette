@@ -32,7 +32,7 @@ type Tester struct {
 	rollup     *rollupMock
 	book       AddressBook
 	env        *env
-	inputIndex int
+	index int
 }
 
 // NewTester creates a Tester for the given application
@@ -43,7 +43,7 @@ func NewTester(app Application) *Tester {
 		rollup:     rollup,
 		book:       book,
 		env:        newEnv(context.Background(), book, rollup, app),
-		inputIndex: 0,
+		index: 0,
 	}
 }
 
@@ -80,18 +80,18 @@ func (t *Tester) DepositEther(
 func (t *Tester) DepositERC20(
 	token common.Address,
 	msgSender common.Address,
-	amount *big.Int,
+	value *big.Int,
 	payload []byte,
 ) TestAdvanceResult {
-	if amount.Cmp(MaxUint256) > 0 {
+	if value.Cmp(MaxUint256) > 0 {
 		panic("value too big")
-	} else if amount.Cmp(big.NewInt(0)) < 0 {
+	} else if value.Cmp(big.NewInt(0)) < 0 {
 		panic("negative value")
 	}
 	portalPayload := make([]byte, 0, common.AddressLength+2*common.HashLength+len(payload))
 	portalPayload = append(portalPayload, token[:]...)
 	portalPayload = append(portalPayload, msgSender[:]...)
-	portalPayload = append(portalPayload, amount.FillBytes(make([]byte, common.HashLength))...)
+	portalPayload = append(portalPayload, value.FillBytes(make([]byte, common.HashLength))...)
 	portalPayload = append(portalPayload, payload...)
 	return t.sendAdvance(t.env.ERC20Portal, portalPayload)
 }
@@ -115,9 +115,9 @@ func (t *Tester) sendAdvance(msgSender common.Address, payload []byte) TestAdvan
 	metadata := Metadata{
 		ChainId:        1,
 		AppContract:    common.HexToAddress("0xab7528bb862fb57e8a2bcd567a2e929a0be56a5e"),
-		InputIndex:     t.inputIndex,
+		Index:          t.index,
 		MsgSender:      msgSender,
-		BlockNumber:    int64(t.inputIndex),
+		BlockNumber:    int64(t.index),
 		BlockTimestamp: time.Now().Unix(),
 		PrevRandao:     "0x0000000000000000000000000000000000000000000000000000000000000001",
 	}
@@ -126,7 +126,7 @@ func (t *Tester) sendAdvance(msgSender common.Address, payload []byte) TestAdvan
 		Payload:  payload,
 	}
 	err := t.env.handle(&input)
-	t.inputIndex++
+	t.index++
 	return TestAdvanceResult{
 		Vouchers:             t.rollup.Vouchers,
 		DelegateCallVouchers: t.rollup.DelegateCallVouchers,

@@ -68,14 +68,14 @@ func (e *env) handle(input any) (err error) {
 
 func (e *env) handleAdvance(input *advanceInput) error {
 	slog.Debug("received advance",
-		"payload", hexutil.Encode(input.Payload),
 		"chainId", input.Metadata.ChainId,
 		"appContract", input.Metadata.AppContract,
-		"inputIndex", input.Metadata.InputIndex,
 		"msgSender", input.Metadata.MsgSender,
 		"blockNumber", input.Metadata.BlockNumber,
 		"blockTimestamp", input.Metadata.BlockTimestamp,
 		"prevRandao", input.Metadata.PrevRandao,
+		"index", input.Metadata.Index,
+		"payload", hexutil.Encode(input.Payload),
 	)
 	var (
 		err     error

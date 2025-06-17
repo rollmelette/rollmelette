@@ -170,7 +170,7 @@ func (s *ERC20WalletSuite) TestValidDeposit() {
 	s.Require().True(ok)
 	s.Equal(s.tokens[0], erc20Deposit.Token)
 	s.Equal(s.src, erc20Deposit.Sender)
-	s.Equal(big.NewInt(100), erc20Deposit.Amount)
+	s.Equal(big.NewInt(100), erc20Deposit.Value)
 
 	// check input data
 	s.Equal(common.Hex2Bytes("deadbeef"), input)

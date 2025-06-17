@@ -18,20 +18,20 @@ type Metadata struct {
 	// AppContract is the address of the application contract.
 	AppContract common.Address
 
-	// InputIndex is the advance input index.
-	InputIndex int
-
 	// Sender is the account or contract that added the input to the input box.
 	MsgSender common.Address
-
+	
 	// BlockNumber is the number of the block when the input was added to the L1 chain.
 	BlockNumber int64
-
+	
 	// BlockNumber is the timestamp of the block when the input was added to the L1 chain.
 	BlockTimestamp int64
-
+	
 	// PrevRandao is the previous randao value of the block when the input was added to the L1 chain.
 	PrevRandao string
+
+	// Index is the advance input index.
+	Index int
 }
 
 // finishStatus is the status when finishing a rollup input.

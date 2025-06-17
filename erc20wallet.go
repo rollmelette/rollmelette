@@ -24,12 +24,12 @@ type ERC20Deposit struct {
 	// Sender is the account that sent the deposit.
 	Sender common.Address
 
-	// Amount is the amount of tokens sent.
-	Amount *big.Int
+	// Value is the amount of tokens sent.
+	Value *big.Int
 }
 
 func (d *ERC20Deposit) String() string {
-	value := d.Amount.String()
+	value := d.Value.String()
 	return fmt.Sprintf("%v deposited %v of %v token", d.Sender, value, d.Token)
 }
 
@@ -133,10 +133,10 @@ func (w *erc20Wallet) deposit(payload []byte) (Deposit, []byte, error) {
 	sender := common.BytesToAddress(payload[:20])
 	payload = payload[20:]
 
-	amount := new(big.Int).SetBytes(payload[:32])
+	value := new(big.Int).SetBytes(payload[:32])
 	payload = payload[32:]
 
-	newBalance := new(big.Int).Add(w.balanceOf(token, sender), amount)
+	newBalance := new(big.Int).Add(w.balanceOf(token, sender), value)
 	if newBalance.Cmp(MaxUint256) > 0 {
 		// This should not be possible in real world, but we handle it anyway.
 		slog.Warn("overflow erc20 balance", "account", sender)
@@ -144,7 +144,7 @@ func (w *erc20Wallet) deposit(payload []byte) (Deposit, []byte, error) {
 	}
 	w.setBalance(token, sender, newBalance)
 
-	deposit := &ERC20Deposit{token, sender, amount}
+	deposit := &ERC20Deposit{token, sender, value}
 	return deposit, payload, nil
 }
 

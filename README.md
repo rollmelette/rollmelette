@@ -69,7 +69,7 @@ This output means the Rollmelette application running inside NoNodo received the
 ```
 [18:26:23.832] INF nonodo: added advance input index=0 sender=0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 payload=0xdeadbeef
 [18:26:23.906] INF nonodo: processing advance index=0
-[18:26:23.908] INF command: log command=app buffer=stderr line="DBG received advance payload=0xdeadbeef inputIndex=0 msgSender=0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 blockNumber=1 blockTimestamp=1705094783"
+[18:26:23.908] INF command: log command=app buffer=stderr line="DBG received advance payload=0xdeadbeef index=0 msgSender=0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 blockNumber=1 blockTimestamp=1705094783"
 [18:26:23.908] INF nonodo: finished advance
 ```
 
@@ -358,7 +358,7 @@ This input is handled automatically by Rollmelette; the `Advance` method will no
 type ERC20Deposit struct {
 	Token common.Address
 	Sender common.Address
-	Amount *big.Int
+	Value *big.Int
 }
 ```
 
@@ -393,7 +393,7 @@ The snippet below contains the expected output for this command.
 go test -v ./...
 === RUN   TestMyApplicationSuite
 === RUN   TestMyApplicationSuite/TestAdvance
-DBG received advance payload=0xdeadbeef inputIndex=0 msgSender=0xfafafafafafafafafafafafafafafafafafafafa blockNumber=0 blockTimestamp=1705176206
+DBG received advance payload=0xdeadbeef index=0 msgSender=0xfafafafafafafafafafafafafafafafafafafafa blockNumber=0 blockTimestamp=1705176206
 === RUN   TestMyApplicationSuite/TestInspect
 DBG received inspect payload=0xdeadbeef
 --- PASS: TestMyApplicationSuite (0.00s)
