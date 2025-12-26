@@ -29,10 +29,10 @@ type TestInspectResult struct {
 
 // Tester is an unit tester for the Application.
 type Tester struct {
-	rollup     *rollupMock
-	book       AddressBook
-	env        *env
-	index int
+	rollup *rollupMock
+	book   AddressBook
+	env    *env
+	index  int
 }
 
 // NewTester creates a Tester for the given application
@@ -40,10 +40,10 @@ func NewTester(app Application) *Tester {
 	rollup := &rollupMock{}
 	book := NewAddressBook()
 	return &Tester{
-		rollup:     rollup,
-		book:       book,
-		env:        newEnv(context.Background(), book, rollup, app),
-		index: 0,
+		rollup: rollup,
+		book:   book,
+		env:    newEnv(context.Background(), book, rollup, app),
+		index:  0,
 	}
 }
 

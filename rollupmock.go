@@ -83,6 +83,7 @@ func (m *rollupMock) sendReport(ctx context.Context, payload []byte) error {
 
 func (m *rollupMock) reset() {
 	m.Vouchers = nil
+	m.DelegateCallVouchers = nil
 	m.Notices = nil
 	m.Reports = nil
 }
